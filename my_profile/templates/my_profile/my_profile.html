@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block head %}
+    <title>{{ user.username }}'s profile</title>
+    <link rel="stylesheet" href="{% static 'my_profile.css' %}?v1.2">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=Merriweather+Sans&family=Mukta:wght@300&family=Ubuntu:wght@700&display=swap"
+          rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+    <div class="card mb-3" style="max-width: 540px;">
+        <div class="row no-gutters">
+            <div class="col-md-4">
+                <div class="profile-picture">
+                    <img src="{{ user.profile.picture.url }}" alt="">
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="card-body">
+                    <h5 class="card-title">{{ user.username }}</h5>
+                    <p class="card-text"></p>
+
+                </div>
+            </div>
+            <a href="{ %}"></a>
+        </div>
+    </div>
+
+
+    <ul class="nav ">
+        <li class="nav-item">
+            <a class="nav-link " href="{% url 'profile:watched films' %}">Watched</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'profile:reviews' %}">Reviews</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'profile:watchlist' %}">Watchlist</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'profile:lists' %}">Lists</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#">Likes</a>
+        </li>
+
+    </ul>
+
+
+
+
+
+
+{% endblock %}

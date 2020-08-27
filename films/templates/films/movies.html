@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block head %}
+    <meta charset="UTF-8">
+    <title>Film List</title>
+    <link rel="stylesheet" href="{% static 'movies.css' %}?v1.3">
+    <link href="https://fonts.googleapis.com/css2?family=Neuton:wght@300&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Neuton:wght@300&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+    <h2>Movies</h2>
+    <ul>
+        <div class="row">
+            {% if films %}
+                {% for film in films %}
+                    <div class="col-md-2">
+                        <a href="{% url 'films:detail' id=film.id %}" class="film">{{ film.title }}</a>
+                        <br>
+                        <hr>
+
+                    </div>
+
+                {% endfor %}
+            {% else %}
+                <p>No results</p>
+            {% endif %}
+        </div>
+    </ul>
+{% endblock %}
+
+

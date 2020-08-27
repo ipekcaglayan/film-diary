@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block head %}
+    <title style="color: white">Lists</title>
+{% endblock %}
+{% block body %}
+    <h2 style="color: white">Lists</h2>
+    <p><a href="{% url 'profile:create list' %}" >Create List</a></p>
+    <ul>
+        {% for list_name in list_names %}
+            <li><a href="{% url 'profile:list detail' id=list_name.id %}">{{ list_name.list_name }}</a></li>
+
+        {% endfor %}
+
+    </ul>
+
+{% endblock %}

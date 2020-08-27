@@ -1,0 +1,29 @@
+h2 {
+    font-family: 'Permanent Marker', cursive;
+    color: #e8e4e1;
+    text-align: center;
+    margin-top: 100px;
+    margin-bottom: 20px;
+}
+
+.watch-later {
+    padding-left: 890px;
+    margin-top: 100px;
+    margin-bottom: 20px;
+    color: #dbc6eb;
+}
+
+.movie {
+    font-family: 'Ubuntu', sans-serif;
+    color: #91d18b;
+}
+
+.container {
+    width: 30%;
+    margin-top: 50px;
+}
+
+hr {
+    border: 3px solid;
+    color: #dbc6eb;
+}

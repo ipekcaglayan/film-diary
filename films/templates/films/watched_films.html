@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block head %}
+    <meta charset="UTF-8">
+    <title>Watched Films</title>
+    <link rel="stylesheet" href="{% static 'watched_films.css' %}?v1.2">
+    <link href="https://fonts.googleapis.com/css2?family=Neuton:wght@300&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+    <h2>Watched</h2>
+
+
+    <ul>
+        <div class="row">
+            {% for seen in seen_films %}
+                <div class="col-md-3">
+                    <a href="{% url 'films:detail' id=seen.film.id %}" class="film">{{ seen.film.title }}</a>
+
+                    <hr>
+
+
+                </div>
+            {% endfor %}
+
+
+        </div>
+
+
+    </ul>
+
+
+{% endblock %}
+
+
+
+
+
+

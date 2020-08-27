@@ -1,0 +1,59 @@
+.card-text {
+    font-family: 'Ubuntu', sans-serif;
+    color: #5c3880;
+}
+
+.d-inline-block {
+    font-family: 'Mukta', sans-serif;
+    font-size: larger;
+    color: #5c3880;
+}
+
+a {
+    color: #91d18b;
+}
+
+h1 {
+    color: #fcf1fff7;
+    font-family: 'Cormorant Garamond', serif;
+    border-left-width: 10px;
+    padding-left: 40px;
+    padding-top: 80px;
+}
+
+.genre {
+    padding-left: 40px;
+}
+
+h4 {
+    font-family: 'Permanent Marker', cursive;
+    color: #fcf1fff7;
+    text-align: center;
+    font-size: 30px;
+}
+
+
+#btn-watched:hover {
+    background-color: #292b2c; /* Green */
+    color: white;
+}
+#btn-watched:hover:before{
+    content: "Remove";
+}
+#btn-watched:hover span {
+  display:none
+}
+.container{
+    display: flex;
+    margin-left: 0;
+}
+#btn-liked:hover {
+    background-color: #d9534f; /* Green */
+    color: white;
+}
+#btn-liked:hover:before{
+    content: "Unlike";
+}
+#btn-liked:hover span {
+  display:none
+}

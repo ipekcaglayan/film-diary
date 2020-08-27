@@ -1,0 +1,37 @@
+h2 {
+    font-family: 'Permanent Marker', cursive;
+    color: #e8e4e1;
+    text-align: center;
+    margin-top: 100px;
+    margin-bottom: 20px;
+}
+
+.watch-later {
+    padding-left: 840px;
+    margin-top: 100px;
+    margin-bottom: 20px;
+    color: #dbc6eb;
+}
+
+.movie {
+    font-family: 'Cormorant Garamond', serif;
+    color: #91d18b;
+    font-size: larger;
+}
+
+.container {
+    width: 30%;
+    margin-top: 50px;
+}
+
+hr {
+    border: 2px solid;
+    color: #dbc6eb;
+}
+
+.row {
+    padding-top: 50px;
+    padding-left: 50px;
+    padding-bottom: 50px;
+    padding-right: 50px;
+}

@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head %}
+    <title>{{ genre.name }}</title>
+    <link rel="stylesheet" href="{% static 'genre_detail.css' %}?v1.1">
+    <link href="https://fonts.googleapis.com/css2?family=Neuton:wght@300&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Neuton:wght@300&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap" rel="stylesheet">
+{% endblock %}
+{% block body %}
+    <h2>{{ genre.name }}</h2>
+
+
+
+    <ul>
+        <div class="row">
+            {% for film in genre_films %}
+                <div class="col-md-2">
+                    <a href="{% url 'films:detail' id=film.id %}" class="movie"><p>{{ film.title }}</a>
+                    <br>
+                    <hr>
+
+                </div>
+
+            {% endfor %}
+        </div>
+    </ul>
+
+
+{% endblock %}

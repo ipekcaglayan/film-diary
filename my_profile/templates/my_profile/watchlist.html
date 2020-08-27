@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head %}
+    <title>Watchlist</title>
+    <link rel="stylesheet" href="{% static 'watchlist.css' %}?v1.3">
+    <link href="https://fonts.googleapis.com/css2?family=Neuton:wght@300&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap" rel="stylesheet">
+{% endblock %}
+{% block body %}
+    <h2>Watchlist</h2>
+    <div>
+        <p><a href="{% url 'profile:watch later' %}" class="watch-later">Add Film</a></p>
+    </div>
+
+        <div class="container">
+            <ul >
+                {% for movie in movies %}
+
+                    <a href="{% url 'films:detail' id=movie.film.id %}"
+                                                   class="movie">{{ movie.film }}</a>
+
+                    <br>
+                    <hr >
+
+
+
+                {% endfor %}
+            </ul>
+        </div>
+
+
+
+{% endblock %}

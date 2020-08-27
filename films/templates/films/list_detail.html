@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block head %}
+    <title>{{ list_name.list_name }}</title>
+{% endblock %}
+{% block body %}
+    <p><a href="{% url 'profile:film to list' id=list_name.id %}" >Add Film</a></p>
+    <h2 style="color: white">{{ list_name.list_name }}</h2>
+    <ul>
+        {% for liste in list_films %}
+            <li><a href="{% url 'films:detail' id=liste.film.id %}" class="film">{{ liste.film.title }}</a></li>
+
+        {% endfor %}
+    </ul>
+
+{% endblock %}

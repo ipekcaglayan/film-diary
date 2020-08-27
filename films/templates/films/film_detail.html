@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block head %}
+    <title>{{ detailed_film.title }}</title>
+    <link rel="stylesheet" href="{% static 'film_detail.css' %}?v1.2">
+    <link href="https://fonts.googleapis.com/css2?family=Neuton:wght@300&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+    <div class="row-md-2">
+        <div class=" film col-md-12">
+            <h1>{{ detailed_film.title }}</h1>
+            <p class="genre">
+                {% for g in genres %}
+                    <a href="{% url 'genre_detail' id=g.id %}">{{ g.name }} </a>
+                {% endfor %}
+            </p>
+        </div>
+        {% if user.is_authenticated %}
+            <div class="container">
+                <div>
+
+                    <form id="form_id" method='post' style="padding-left: 40px;">{% csrf_token %}
+                        {% if added %}
+                            <button id="btn-watched" class="btn btn-success" data-hover="Remove"><span>Watched</span>
+                            </button>
+                        {% else %}
+                            <button id="btn" class="btn btn-secondary">Watch</button>
+                        {% endif %}
+
+                    </form>
+                </div>
+                <div>
+
+                    <form id="form_watchlist" method='post' style="padding-left: 10px;">{% csrf_token %}
+                        <button class="btn btn-secondary"> Watchlist</button>
+
+                    </form>
+                </div>
+                <div>
+                    <form id="form-like" method='post' style="padding-left: 10px;">{% csrf_token %}
+                        {% if liked %}
+                            <button id="btn-liked" class="btn btn-danger" data-hover="Unlike"><span>Liked</span>
+                            </button>
+                        {% else %}
+                            <button id="btn-unliked" class="btn btn-secondary">Like</button>
+                        {% endif %}
+
+                </div>
+            </div>
+
+
+        {% endif %}
+    </div>
+
+    <br> <br> <br>
+    {% if film_reviews %}
+        <ul class="film-review" style="padding-right: 40px;
+}">
+            <h4>Reviews</h4>
+            <br>
+            <div class="row">
+                {% for review in film_reviews %}
+
+                    <div class="col-md-4">
+                        <div class="row no-gutters border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+                            <div class="col p-4 d-flex flex-column position-static" style="background-color: #fcf1fff7">
+                                <div class="d-inline-block mb-2"> reviewed by
+                                    <strong><i>{{ review.author }}</i></strong></div>
+                                <p>⭐ {{ review.rating }}</p>
+                                <p class="card-text mb-auto">{{ review.body|truncatechars:50 }}</p>
+                                <a href="{% url 'profile:detail' id=review.id %}">continue reading</a>
+                                <br>
+                                <div class="mb-1 text-muted">{{ review.date }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                {% endfor %}
+            </div>
+        </ul>
+    {% endif %}
+    <br>
+
+    <script>
+        $("#form_id").on('submit', function (event) {
+
+            event.preventDefault();
+            event.stopPropagation();
+            var film_id = '{{ detailed_film.id }}';
+            $.ajax({
+                type: "POST",
+                url: "{% url 'profile:buttonAjax' %}",
+                data: {
+                    film_id: film_id,
+                    'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+                },
+                datatype: 'json',
+                success: function (data) {
+                    if (data['success']) {
+                        $("#btn").remove()
+                        $('#btn-watched').remove()
+                        $('#form_id').append("<button id=\"btn-watched\" class=\"btn btn-success\" data-hover=\"Remove\"><span>Watched</span></button>")
+
+
+                    } else {
+                        $("#btn-watched").remove()
+                        $('#btn').remove()
+                        $('#form_id').append("<button id=\"btn\" class=\"btn btn-secondary\">Watch</button>")
+
+
+                    }
+
+                }
+            });
+        });
+        $("#form-like").on('submit', function (event) {
+
+            event.preventDefault();
+            event.stopPropagation();
+            var film_id = '{{ detailed_film.id }}';
+            $.ajax({
+                type: "POST",
+                url: "{% url 'profile:likeAjax' %}",
+                data: {
+                    film_id: film_id,
+                    'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+                },
+                datatype: 'json',
+                success: function (data) {
+                    if (data['success']) {
+                        $("#btn-liked").remove()
+                        $('#btn-unliked').remove()
+                        $('#form-like').append("<button id=\"btn-liked\" class=\"btn btn-danger\" data-hover=\"Unlike\"><span>Liked</span></button>")
+
+
+                    } else {
+                        $("#btn-unliked").remove()
+                        $('#btn-liked').remove()
+                        $('#form-like').append("<button id=\"btn-unliked\" class=\"btn btn-secondary\">Like</button>")
+
+
+                    }
+
+                }
+            });
+        });
+    </script>
+
+{% endblock %}
