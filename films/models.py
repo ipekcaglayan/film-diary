@@ -27,6 +27,7 @@ class ListName(models.Model):
     list_name = models.CharField(max_length=200)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     date = models.DateTimeField(auto_now_add=True)
+    body = models.TextField()
 
     def __str__(self):
         return self.list_name
@@ -44,4 +45,3 @@ class FilmList(models.Model):
 class FilmLike(models.Model):
     film = models.ForeignKey(Film, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-

@@ -211,6 +211,8 @@
 
     </section>
     <br>
+
+
     <section>
         <div class="container">
             <h3 style="text-align: left"> Popular on ...</h3>
@@ -227,26 +229,38 @@
             </div>
 
         </div>
-
+        <br> <br> <br> <br>
     </section>
-
-
-    <section>
-        <div class="container">
-            <h3 style="text-align: left"> Popular on ...</h3>
-            <hr>
-            <div class="row">
-                {% for film in popular_films %}
-                    <div class="card mb-3 ml-3" style="max-width: 170px; background-color: #000000">
+    <div class="container">
+        <a href="{% url 'all lists' %}"><h3 style="text-align: left">Popular Lists</h3></a><br>
+        <div class="row">
+            {% for list in list_films %}
+                <div class="col-md-4">
+                    <div class="card mb-3 mr-7" style="max-width: 210px; background-color: #1d2124">
                         <div class="row no-gutters">
-                            <a href="{% url 'films:detail' id=film.id %}"><img src="{{ film.poster.url }}"
-                                                                               class="card-img" alt="..."></a>
+                            {% for film_list in list %}
+                                <div class="col-md-4">
+                                    <img src="{{ film_list.film.poster.url }}" class="card-img" alt="...">
+                                </div>
+                            {% endfor %}
+
                         </div>
                     </div>
-                {% endfor %}
-            </div>
 
+                </div>
+            {% endfor %}
+            {% for name in list_names %}
+                <div class="col-md-4">
+                    <p style="margin-top: -5px"><a href="{% url 'profile:list detail' id=name.id %}">{{ name.list_name }}</a></p>
+                    <p style="margin-top: -7px">{{ name.user.username }} <img src="{{ name.user.profile.picture.url }}"
+                                                     style="width:8%; border-radius: 100%; margin-left: 5px" alt="">
+                    </p>
+                </div>
+            {% endfor %}
         </div>
+    </div>
+    <section>
+
 
     </section>
 

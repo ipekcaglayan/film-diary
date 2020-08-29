@@ -2,7 +2,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
-    <title>Rezume Free Template by Colorlib</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
@@ -57,9 +56,8 @@
                     <li class="nav-item"><a class="nav-link" href="{% url 'accounts:login' %}">Sign In</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'accounts:signup' %}">Create Account</a></li>
                 {% endif %}
-                <li class="nav-item"><a class="nav-link" href="{% url 'profile:resume' %}">Resume</a></li>
                 <li class="nav-item"><a class="nav-link" href="{% url 'films:movies' %}">Movies</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Lists</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'all lists' %}">Lists</a></li>
             </ul>
             <form class="form-inline my-2 my-lg-0" action="{% url 'films:movies' %}">
                 {% csrf_token %}
@@ -75,5 +73,6 @@
 
 {% block body %}
 {% endblock %}
+<script src="https://kit.fontawesome.com/32ba8fb0fe.js" crossorigin="anonymous"></script>
 </body>
 </html>

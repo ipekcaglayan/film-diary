@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head %}
+
+    <link rel="stylesheet" href="{% static 'all_lists.css' %}?v1.1">
+{% endblock %}
+{% block body %}
+    <div class="container" id="lists">
+
+        {% for list,name,date  in list_films %}
+            <a href="{% url 'profile:list detail' id=name.id %}">
+            <div class="card mb-3" style="width: 50rem; border-color: #3f3f3f">
+                <div class="card-body" style="background-color: #342f2f;">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="row no-gutters">
+                                {% for film_list in list %}
+                                    <div class="col-md-4">
+                                        <img src="{{ film_list.film.poster.url }}" class="card-img" alt="...">
+                                    </div>
+                                {% endfor %}
+
+                            </div>
+                        </div>
+                        <div class="col-md-9">
+                            <p>
+                                Last Update: <span class="date"><span
+                                    class="icon-calendar"></span> {{ date }}</span>
+                            </p>
+                            <p>{{ name.body }}</p>
+                            <p>created by <i>{{ name.user.username }}</i> <img src="{{ name.user.profile.picture.url}}"
+                                                                        style="width: 5%;border-radius: 100%; margin-left: 5px" alt="">
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </a>
+
+
+
+        {% endfor %}
+    </div>
+{% endblock %}

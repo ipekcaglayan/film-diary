@@ -4,7 +4,7 @@
 {% block head %}
     <meta charset="UTF-8">
     <title>Film List</title>
-    <link rel="stylesheet" href="{% static 'movies.css' %}?v1.3">
+    <link rel="stylesheet" href="{% static 'movies2.css' %}?v1.1">
     <link href="https://fonts.googleapis.com/css2?family=Neuton:wght@300&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Neuton:wght@300&display=swap" rel="stylesheet">
@@ -12,24 +12,41 @@
 {% endblock %}
 
 {% block body %}
-    <h2>Movies</h2>
-    <ul>
+
+    <div class="container" style="margin-top: 250px">
         <div class="row">
             {% if films %}
                 {% for film in films %}
-                    <div class="col-md-2">
-                        <a href="{% url 'films:detail' id=film.id %}" class="film">{{ film.title }}</a>
-                        <br>
-                        <hr>
 
+
+                    <div class="col-md-3" style="margin-bottom: 20px">
+                        <a href="{% url 'films:detail' id=film.id %}">
+                            <div class="card card-flip h-100" style="border: #00CCFF; background-color: #0b0b0b">
+                                <div class="card-front " style="background-color: #0b0b0b">
+                                    <div class="card-body">
+                                        <img src="{{ film.poster.url }}" alt="" style="max-width: 210px">
+                                    </div>
+                                </div>
+                                <div class="card-back" style="background-color: #0b0b0b">
+                                    <div class="card-body" style="background-color: #0b0b0b">
+                                        <h3 class="card-title">{{ film.title }}</h3>
+                                        <p class="card-text">{{ film.body }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
                     </div>
+
+
 
                 {% endfor %}
             {% else %}
                 <p>No results</p>
             {% endif %}
         </div>
-    </ul>
+    </div>
+
+
 {% endblock %}
 
 

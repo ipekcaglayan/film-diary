@@ -3,56 +3,59 @@
 
 {% block head %}
     <title>{{ detailed_film.title }}</title>
-    <link rel="stylesheet" href="{% static 'film_detail.css' %}?v1.2">
     <link href="https://fonts.googleapis.com/css2?family=Neuton:wght@300&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap" rel="stylesheet">
 {% endblock %}
 
 {% block body %}
-    <div class="row-md-2">
-        <div class=" film col-md-12">
-            <h1>{{ detailed_film.title }}</h1>
-            <p class="genre">
-                {% for g in genres %}
-                    <a href="{% url 'genre_detail' id=g.id %}">{{ g.name }} </a>
-                {% endfor %}
-            </p>
-        </div>
-        {% if user.is_authenticated %}
-            <div class="container">
-                <div>
-
-                    <form id="form_id" method='post' style="padding-left: 40px;">{% csrf_token %}
-                        {% if added %}
-                            <button id="btn-watched" class="btn btn-success" data-hover="Remove"><span>Watched</span>
-                            </button>
-                        {% else %}
-                            <button id="btn" class="btn btn-secondary">Watch</button>
-                        {% endif %}
-
-                    </form>
+    <div class="container" style="margin-top: 200px">
+        <div class="row">
+            <div class="col-md-3">
+                <img src="{{ detailed_film.poster.url }}" style="max-width: 360px" alt="">
+            </div>
+            <div class=" col-md-6" style="margin-left: 130px">
+                <p>{{ detailed_film.title }}</p>
+                <p>{{ detailed_film.body }}</p>
+                <div class="inline-genres">
+                    {% for genre in genres %}
+                        <a class="btn-sm mr-2 btn-secondary"
+                           href="{% url 'genre_detail' id=genre.id %}"> {{ genre.name }}</a>
+                    {% endfor %}
                 </div>
-                <div>
+                <br> <br>
+                <div class="inline-buttons">
+                    {% if user.is_authenticated %}
+                        <div class="watched-btn" style="display: inline">
+                            <a href="#" style="margin-right: 20px"><i class="fas fa-eye fa-3x"></i></a>
+                        </div>
+                        <div class="like-btn" style="display: inline">
+                            <a href="#" style="margin-right: 20px"><i class="fas fa-heart fa-3x"></i></a>
+                        </div>
+                        <div class="watchlist-btn" style="display: inline">
 
-                    <form id="form_watchlist" method='post' style="padding-left: 10px;">{% csrf_token %}
-                        <button class="btn btn-secondary"> Watchlist</button>
+                            <a href="#" id="watchlist"
+                                    {% if added_watchlist %}
+                               style="color: #5fdde5"
+                                    {% else %}
+                               style="color: #726f6f"
+                                    {% endif %}
+                               onclick="WatchLater({{ detailed_film.id }});"><i
+                                    class="fas fa-plus fa-3x"></i></a>
 
-                    </form>
-                </div>
-                <div>
-                    <form id="form-like" method='post' style="padding-left: 10px;">{% csrf_token %}
-                        {% if liked %}
-                            <button id="btn-liked" class="btn btn-danger" data-hover="Unlike"><span>Liked</span>
-                            </button>
-                        {% else %}
-                            <button id="btn-unliked" class="btn btn-secondary">Like</button>
-                        {% endif %}
 
+                        </div>
+
+
+
+                    {% endif %}
                 </div>
             </div>
+        </div>
+    </div>
 
 
-        {% endif %}
+
+
     </div>
 
     <br> <br> <br>
@@ -85,14 +88,11 @@
     <br>
 
     <script>
-        $("#form_id").on('submit', function (event) {
-
-            event.preventDefault();
-            event.stopPropagation();
-            var film_id = '{{ detailed_film.id }}';
+        function WatchLater(film_id) {
+            console.log("ipek");
             $.ajax({
                 type: "POST",
-                url: "{% url 'profile:buttonAjax' %}",
+                url: "{% url 'profile:watchLaterAjax' %}",
                 data: {
                     film_id: film_id,
                     'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
@@ -100,22 +100,22 @@
                 datatype: 'json',
                 success: function (data) {
                     if (data['success']) {
-                        $("#btn").remove()
-                        $('#btn-watched').remove()
-                        $('#form_id').append("<button id=\"btn-watched\" class=\"btn btn-success\" data-hover=\"Remove\"><span>Watched</span></button>")
+                        console.log("success");
+                        $("#watchlist").css('color', '#5fdde5')
 
 
                     } else {
-                        $("#btn-watched").remove()
-                        $('#btn').remove()
-                        $('#form_id').append("<button id=\"btn\" class=\"btn btn-secondary\">Watch</button>")
+                        $("#watchlist").css('color', '#726f6f')
 
 
                     }
 
+
                 }
             });
-        });
+        }
+
+
         $("#form-like").on('submit', function (event) {
 
             event.preventDefault();
@@ -150,3 +150,4 @@
     </script>
 
 {% endblock %}
+}

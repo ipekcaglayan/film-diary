@@ -1,4 +1,4 @@
-h2 {
+h1 {
     font-family: 'Permanent Marker', cursive;
     color: #e8e4e1;
     text-align: center;
@@ -6,32 +6,34 @@ h2 {
     margin-bottom: 20px;
 }
 
-.watch-later {
-    padding-left: 840px;
-    margin-top: 100px;
-    margin-bottom: 20px;
-    color: #dbc6eb;
+
+/*
+flip card
+*/
+.card-flip > div {
+    backface-visibility: hidden;
+    transition: transform 300ms;
+    transition-timing-function: linear;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    display: flex;
 }
 
-.movie {
-    font-family: 'Cormorant Garamond', serif;
-    color: #91d18b;
-    font-size: larger;
+.card-front {
+    transform: rotateY(0deg);
 }
 
-.container {
-    width: 30%;
-    margin-top: 50px;
+.card-back {
+    transform: rotateY(180deg);
+    position: absolute;
+    top: 0;
 }
 
-hr {
-    border: 2px solid;
-    color: #dbc6eb;
+.card-flip:hover .card-front {
+    transform: rotateY(-180deg);
 }
 
-.row {
-    padding-top: 50px;
-    padding-left: 50px;
-    padding-bottom: 50px;
-    padding-right: 50px;
+.card-flip:hover .card-back {
+    transform: rotateY(0deg);
 }

@@ -31,6 +31,7 @@ urlpatterns = [
     path('films/', include('films.urls')),
     path('genres/', films_views.genres, name='genres'),
     path('genres/<int:id>', films_views.genre_detail, name="genre_detail"),
+    path('lists/', films_views.all_lists, name="all lists"),
 
 ]
 urlpatterns += staticfiles_urlpatterns()

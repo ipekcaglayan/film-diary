@@ -11,8 +11,6 @@ def my_profile(request):
     return render(request, 'my_profile/my_profile.html', {'user': user})
 
 
-
-
 def reviews(request):
     reviews = Review.objects.filter(author=request.user).order_by('date')
     return render(request, 'my_profile/reviews.html', {'reviews': reviews})
@@ -82,9 +80,9 @@ def watched_button_ajax(request):
     return JsonResponse(data)
 
 
-def lists(request):
+def user_lists(request):
     list_names = ListName.objects.filter(user=request.user)
-    return render(request, 'films/lists.html', {'list_names': list_names})
+    return render(request, 'films/user_lists.html', {'list_names': list_names})
 
 
 def list_detail(request, id):
@@ -137,3 +135,29 @@ def like_button_ajax(request):
 
 def resume(request):
     return render(request, 'homepage/resume.html')
+
+
+def watchlist_ajax(request):
+    data = {'success': False}
+    if request.method == 'POST':
+        film_id = request.POST['film_id']
+        film = Film.objects.get(id=film_id)
+        Watch.objects.get(film=film).delete()
+        data['success'] = True
+
+    return JsonResponse(data)
+
+
+def watch_later_ajax(request):
+    data = {'success': True}
+    if request.method == 'POST':
+        film_id = request.POST['film_id']
+        film = Film.objects.get(id=film_id)
+        watch_list = Watch.objects.filter(film=film, user=request.user)
+        if not list(watch_list):
+            Watch.objects.create(film=film, user=request.user)
+            data['success'] = True
+        else:
+            watch_list.delete()
+            data['success'] = False
+    return JsonResponse(data)

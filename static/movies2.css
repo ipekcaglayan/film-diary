@@ -25,10 +25,6 @@ flip card
 .card-flip:hover .card-front {
   transform: rotateY(-180deg);
 }
-h2{
-  font-family: 'Permanent Marker', cursive;
-  font-size: 40px;
-}
 
 .card-flip:hover .card-back {
   transform: rotateY(0deg);

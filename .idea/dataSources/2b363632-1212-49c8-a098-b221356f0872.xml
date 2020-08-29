@@ -1461,147 +1461,152 @@ genre_id</ColNames>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <index id="395" parent="259" name="films_listname_user_id_e618de81_fk_auth_user_id">
+    <column id="395" parent="259" name="body">
+      <Position>5</Position>
+      <DataType>longtext|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <index id="396" parent="259" name="films_listname_user_id_e618de81_fk_auth_user_id">
       <ColNames>user_id</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="396" parent="259" name="PRIMARY">
+    <key id="397" parent="259" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <foreign-key id="397" parent="259" name="films_listname_user_id_e618de81_fk_auth_user_id">
+    <foreign-key id="398" parent="259" name="films_listname_user_id_e618de81_fk_auth_user_id">
       <ColNames>user_id</ColNames>
       <RefTableName>auth_user</RefTableName>
       <RefColNames>id</RefColNames>
     </foreign-key>
-    <column id="398" parent="260" name="id">
+    <column id="399" parent="260" name="id">
       <Position>1</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>null</SequenceIdentity>
     </column>
-    <column id="399" parent="260" name="film_id">
+    <column id="400" parent="260" name="film_id">
       <Position>2</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="400" parent="260" name="body">
+    <column id="401" parent="260" name="body">
       <Position>3</Position>
       <DataType>longtext|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="401" parent="260" name="date">
+    <column id="402" parent="260" name="date">
       <Position>4</Position>
       <DataType>datetime(6)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="402" parent="260" name="author_id">
+    <column id="403" parent="260" name="author_id">
       <Position>5</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="403" parent="260" name="rating">
+    <column id="404" parent="260" name="rating">
       <Position>6</Position>
       <DataType>double|0s</DataType>
     </column>
-    <index id="404" parent="260" name="my_profile_review_title_id_f2f70ace">
+    <index id="405" parent="260" name="my_profile_review_title_id_f2f70ace">
       <ColNames>film_id</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="405" parent="260" name="my_profile_review_author_id_3f67863e_fk_auth_user_id">
+    <index id="406" parent="260" name="my_profile_review_author_id_3f67863e_fk_auth_user_id">
       <ColNames>author_id</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="406" parent="260" name="PRIMARY">
+    <key id="407" parent="260" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <foreign-key id="407" parent="260" name="my_profile_review_film_id_6131ca83_fk_films_film_id">
+    <foreign-key id="408" parent="260" name="my_profile_review_film_id_6131ca83_fk_films_film_id">
       <ColNames>film_id</ColNames>
       <RefTableName>films_film</RefTableName>
       <RefColNames>id</RefColNames>
     </foreign-key>
-    <foreign-key id="408" parent="260" name="my_profile_review_author_id_3f67863e_fk_auth_user_id">
+    <foreign-key id="409" parent="260" name="my_profile_review_author_id_3f67863e_fk_auth_user_id">
       <ColNames>author_id</ColNames>
       <RefTableName>auth_user</RefTableName>
       <RefColNames>id</RefColNames>
     </foreign-key>
-    <column id="409" parent="261" name="id">
+    <column id="410" parent="261" name="id">
       <Position>1</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>null</SequenceIdentity>
     </column>
-    <column id="410" parent="261" name="film_id">
+    <column id="411" parent="261" name="film_id">
       <Position>2</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="411" parent="261" name="user_id">
+    <column id="412" parent="261" name="user_id">
       <Position>3</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <index id="412" parent="261" name="my_profile_seenfilm_film_id_23e68311_fk_films_film_id">
+    <index id="413" parent="261" name="my_profile_seenfilm_film_id_23e68311_fk_films_film_id">
       <ColNames>film_id</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="413" parent="261" name="my_profile_seenfilm_user_id_f432cf94_fk_auth_user_id">
+    <index id="414" parent="261" name="my_profile_seenfilm_user_id_f432cf94_fk_auth_user_id">
       <ColNames>user_id</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="414" parent="261" name="PRIMARY">
+    <key id="415" parent="261" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <foreign-key id="415" parent="261" name="my_profile_seenfilm_film_id_23e68311_fk_films_film_id">
+    <foreign-key id="416" parent="261" name="my_profile_seenfilm_film_id_23e68311_fk_films_film_id">
       <ColNames>film_id</ColNames>
       <RefTableName>films_film</RefTableName>
       <RefColNames>id</RefColNames>
     </foreign-key>
-    <foreign-key id="416" parent="261" name="my_profile_seenfilm_user_id_f432cf94_fk_auth_user_id">
+    <foreign-key id="417" parent="261" name="my_profile_seenfilm_user_id_f432cf94_fk_auth_user_id">
       <ColNames>user_id</ColNames>
       <RefTableName>auth_user</RefTableName>
       <RefColNames>id</RefColNames>
     </foreign-key>
-    <column id="417" parent="262" name="id">
+    <column id="418" parent="262" name="id">
       <Position>1</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>null</SequenceIdentity>
     </column>
-    <column id="418" parent="262" name="film_id">
+    <column id="419" parent="262" name="film_id">
       <Position>2</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="419" parent="262" name="user_id">
+    <column id="420" parent="262" name="user_id">
       <Position>3</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <index id="420" parent="262" name="my_profile_watch_film_id_43c3b209_fk_films_film_id">
+    <index id="421" parent="262" name="my_profile_watch_film_id_43c3b209_fk_films_film_id">
       <ColNames>film_id</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="421" parent="262" name="my_profile_watch_user_id_52c2bd4f_fk_auth_user_id">
+    <index id="422" parent="262" name="my_profile_watch_user_id_52c2bd4f_fk_auth_user_id">
       <ColNames>user_id</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="422" parent="262" name="PRIMARY">
+    <key id="423" parent="262" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <foreign-key id="423" parent="262" name="my_profile_watch_film_id_43c3b209_fk_films_film_id">
+    <foreign-key id="424" parent="262" name="my_profile_watch_film_id_43c3b209_fk_films_film_id">
       <ColNames>film_id</ColNames>
       <RefTableName>films_film</RefTableName>
       <RefColNames>id</RefColNames>
     </foreign-key>
-    <foreign-key id="424" parent="262" name="my_profile_watch_user_id_52c2bd4f_fk_auth_user_id">
+    <foreign-key id="425" parent="262" name="my_profile_watch_user_id_52c2bd4f_fk_auth_user_id">
       <ColNames>user_id</ColNames>
       <RefTableName>auth_user</RefTableName>
       <RefColNames>id</RefColNames>
