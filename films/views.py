@@ -21,12 +21,19 @@ def film_detail(request, id):
     genres = detailed_film.genres.all()
     film_reviews = Review.objects.filter(film__title=detailed_film.title)
     if request.user.is_authenticated:
-        added_watchlist = Watch.objects.filter(user=request.user, film=detailed_film)
+        added_watchlist = list(Watch.objects.filter(user=request.user, film=detailed_film))
+        reviewed = list(Review.objects.filter(author=request.user, film=detailed_film))
+        if reviewed:
+            review = reviewed[0]
+        else:
+            review = []
+        liked = list(FilmLike.objects.filter(film=detailed_film, user=request.user))
         added = list(SeenFilm.objects.filter(film=detailed_film, user=request.user))
-        liked = FilmLike.objects.filter(film=detailed_film, user=request.user)
         return render(request, 'films/film_detail.html',
-                      {'detailed_film': detailed_film, 'genres': genres, 'film_reviews': film_reviews, 'added': added,
+                      {'detailed_film': detailed_film, 'genres': genres, 'film_reviews': film_reviews,
+                       'added': added, 'reviewed': reviewed, 'review': review,
                        'liked': liked, 'added_watchlist': added_watchlist})
+
     else:
         return render(request, 'films/film_detail.html',
                       {'detailed_film': detailed_film, 'genres': genres, 'film_reviews': film_reviews})

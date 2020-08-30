@@ -1,15 +1,135 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block head %}
     <title>{{ list_name.list_name }}</title>
+    <link rel="stylesheet" href="{% static 'list_detail.css' %}?v1.1">
 {% endblock %}
 {% block body %}
-    <p><a href="{% url 'profile:film to list' id=list_name.id %}" >Add Film</a></p>
-    <h2 style="color: white">{{ list_name.list_name }}</h2>
-    <ul>
-        {% for liste in list_films %}
-            <li><a href="{% url 'films:detail' id=liste.film.id %}" class="film">{{ liste.film.title }}</a></li>
+    <div class="container" style="margin-top: 250px">
+       <p> <h2 style="display: inline; font-size: 75px">{{ list_name.list_name }} </h2>
+        <a href="#"
+           style="display: inline; color: #828282; margin-left: 10px; "
+           onclick="DeleteListDetail({{ list_name.id }});"><i
+                class="fas fa-trash-alt fa-2x"></i></a></p>
+        <p><i class="fas fa-pencil-alt mr-2"></i>created by <i><strong>{{ list_name.user }}</strong></i></p>
+        {% if last_update %}
+            <p class="text-muted"><i class="fas fa-edit mr-2"></i>Last Update: {{ last_update }}</p>
 
-        {% endfor %}
-    </ul>
+        {% endif %}
 
+        <br>
+        <p>{{ list_name.body }}</p> <br> <br>
+        <div class="row">
+
+            {% for list in list_films %}
+
+
+                <div id="movie-card-{{ list.film.id }}" class="col-md-3" style="margin-bottom: 20px">
+                    <a href="{% url 'films:detail' id=list.film.id %}">
+                        <div class="card card-flip h-100" style="border: #00CCFF; background-color: #0b0b0b">
+                            <div class="card-front " style="background-color: #0b0b0b">
+                                <div class="card-body">
+                                    <img src="{{ list.film.poster.url }}" alt="" style="max-width: 210px">
+                                </div>
+                            </div>
+                            <div class="card-back" style="background-color: #0b0b0b">
+                                <div class="card-body" style="background-color: #0b0b0b">
+                                    <h3 class="card-title">{{ list.film.title }} </h3>
+                                    <p class="card-text">{{ list.film.body|truncatechars:150 }}</p>
+
+                                    <form id="form-watch-{{ list.film.id }}" method='post'
+                                          style="padding-left: 40px;">{% csrf_token %}
+                                        <button style="background-color: transparent; border: transparent; margin-left: 25px; "
+                                                onclick="remove_list({{ list.film.id }})"
+                                                class="btn btn-secondary" value="{{ list.film.id }}">
+                                            <i class="fas fa-ban fa-3x"></i>
+                                        </button>
+                                        <p class="text-muted" style="margin-left: 26px; margin-top: -5px">
+                                            Remove</p>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+
+
+            {% endfor %}
+
+        </div>
+    </div>
+    <script>
+
+        function remove_list(film_id) {
+            console.log("#movie-card" + film_id);
+            var list_name = '{{ list_name.list_name }}'
+            $.ajax({
+                type: "POST",
+                url: "{% url 'profile:film_list_ajax' %}",
+                data: {
+                    film_id: film_id,
+                    list_name: list_name,
+                    'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+                },
+                datatype: 'json',
+                success: function (data) {
+                    if (data['success']) {
+                        $("#movie-card-" + film_id).remove();
+
+
+                    }
+
+                }
+            });
+        }
+
+    </script>
+
+    <script>
+        function DeleteListDetail(name_id) {
+
+            bootbox.confirm({
+                title: "Delete List?",
+                message: '<p style="color: #0b0b0b; text-align: center"> Do you really want to delete record? This cannot be undone.</p>',
+                buttons: {
+                    cancel: {
+                        label: '<i class="fa fa-times"></i> Cancel'
+                    },
+                    confirm: {
+                        label: '<i class="fa fa-check"></i> Confirm'
+                    }
+                },
+                callback: function (result) {
+                    if (result) {
+                        console.log("calisti");
+                        $.ajax({
+                            type: "POST",
+                            url: "{% url 'profile:delete_list_ajax' %}",
+                            data: {
+                                name_id: name_id,
+                                'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+                            },
+                            datatype: 'json',
+                            success: function (data) {
+                                if (data['success']) {
+
+                                    window.location.href='{% url 'profile:lists' %}'
+
+
+                                }
+
+
+                            }
+                        });
+                    } else {
+                        bootbox.alert({
+                            message: '<p style="color: #0b0b0b; text-align: center; margin-top: 50px">Record not deleted.</p>'
+                        });
+                    }
+                }
+            });
+
+        }
+    </script>
 {% endblock %}

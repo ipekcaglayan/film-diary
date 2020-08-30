@@ -3,51 +3,351 @@
 {% load crispy_forms_tags %}
 {% block head %}
     <title>{{ user.username }}'s profile</title>
-    <link rel="stylesheet" href="{% static 'my_profile.css' %}?v1.2">
+    {#    <link rel="stylesheet" href="{% static 'my_profile.css' %}?v1.2">#}
+    <link rel="stylesheet" href="{% static 'watchlist.css' %}?v1.1">
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=Merriweather+Sans&family=Mukta:wght@300&family=Ubuntu:wght@700&display=swap"
           rel="stylesheet">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 {% endblock %}
 
 {% block body %}
-    <div class="card mb-3" style="max-width: 540px;">
-        <div class="row no-gutters">
-            <div class="col-md-4">
-                <div class="profile-picture">
-                    <img src="{{ user.profile.picture.url }}" alt="">
-                </div>
-            </div>
-            <div class="col-md-8">
-                <div class="card-body">
-                    <h5 class="card-title">{{ user.username }}</h5>
-                    <p class="card-text"></p>
 
+    <div class="container" style="margin-top: 150px">
+        <div class="card mb-3"
+             style="max-width: 540px; background-color: #fff0; border: 1px rgba(0, 0, 0, .125)">
+            <div class="row no-gutters">
+                <div class="col-md-4">
+                    <div class="profile-picture">
+                        <img style="border-radius: 100%; width: 80%" src="{{ user.profile.picture.url }}" alt="">
+                    </div>
                 </div>
+                <div class="col-md-8">
+                    <div class="card-body">
+                        <h5 style="color: #e8e4e1;
+    font-family: 'Ubuntu', sans-serif;
+    padding-left: 10px;
+    margin-top: 30px;
+    margin-left: 30px;" class="card-title">{{ user.username }}</h5>
+                        <p class="card-text"></p>
+
+                    </div>
+                </div>
+
             </div>
-            <a href="{ %}"></a>
+        </div>
+        <br>
+        <hr style="border: 1px solid; margin-bottom: -2px ">
+        <ul class="nav" style="width: 750px; margin-left: 200px">
+            <li class="nav-item" style="width: 150px">
+                <button style="font-size: 18px; margin-left: 23px" class="w3-bar-item w3-button"
+                        onclick="openCity('watched')">Watched
+                </button>
+            </li>
+            <li class="nav-item" style="width: 150px">
+                <button style="font-size: 18px; margin-left: 23px" class="w3-bar-item w3-button"
+                        onclick="openCity('reviews')">Reviews
+                </button>
+
+            </li>
+            <li class="nav-item" style="width: 150px">
+                <button style="font-size: 18px; margin-left: 23px" class="w3-bar-item w3-button"
+                        onclick="openCity('watchlist')">Watchlist
+                </button>
+            </li>
+            <li class="nav-item" style="width: 150px">
+                <button style="font-size: 18px; margin-left: 25px" class="w3-bar-item w3-button"
+                        onclick="openCity('lists')">Lists
+                </button>
+            </li>
+            <li class="nav-item" style="width: 150px">
+                <button style="font-size: 18px; margin-left: 10px" class="w3-bar-item w3-button"
+                        onclick="openCity('likes')">Likes
+                </button>
+            </li>
+
+        </ul>
+        <hr style="border: 1px solid; margin-top: -2px ">
+
+    </div>
+
+    <div class="container" style="margin-top: 150px; margin-bottom: 200px">
+        <div id="watched" class="city">
+            <h3 style="text-align: left"> Watched Films</h3>
+            <hr>
+            <div class="row">
+                {% for seen in seen_films %}
+                    <div class="card mb-3 ml-3" style="max-width: 170px; background-color: #000000">
+                        <div class="row no-gutters">
+                            <a href="{% url 'films:detail' id=seen.film.id %}"><img
+                                    src="{{ seen.film.poster.url }}"
+                                    class="card-img" alt="..."></a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div id="reviews" class="city" style="display:none">
+            <h1 style="font-family: 'Permanent Marker', cursive; text-align: center; margin-bottom: 50px">
+                Reviews</h1>
+            {% for review in reviews %}
+                <div id="review-card-{{ review.id }}" class="card-body mb-5" style="background-color: #2f2d2d;">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="row no-gutters">
+                                <a href="{% url 'films:detail' id=review.film.id %}"><img
+                                        src="{{ review.film.poster.url }}"
+                                        class="card-img" style=""
+                                        alt="..."></a>
+                            </div>
+                        </div>
+
+                        <div class="col-md-9" style="margin-top: 50px;">
+                            <p>
+                                Last Update: <span class="date"><span
+                                    class="icon-calendar"></span> {{ review.date }}</span>
+
+                            </p>
+                            <a href="{% url 'profile:detail' id=review.id %}"
+                               style="color: #807575">{{ review.body|truncatechars:280 }}</a>
+                            <p>
+                            <p>created by <i>{{ review.author.username }}</i> <img
+                                    src="{{ review.author.profile.picture.url }}"
+                                    style="width: 5%;border-radius: 100%; margin-left: 5px"
+                                    alt="">
+
+                            </p>
+                            <p class="delete-icon"><a href="#"
+                                                      onclick="DeleteReview({{ review.id }});"><i
+                                    class="fas fa-trash-alt fa-2x"></i></a></p>
+
+                        </div>
+
+                    </div>
+                </div>
+            {% endfor %}
+
+        </div>
+        <div id="watchlist" class="city" style="display:none">
+            <h2 style="text-align: center">Watchlist</h2> <br> <br>
+            <div class="row">
+
+                {% for movie in movies %}
+
+
+                    <div id="movie-card-{{ movie.film.id }}" class="col-md-3" style="margin-bottom: 20px">
+                        <a href="{% url 'films:detail' id=movie.film.id %}">
+                            <div class="card card-flip h-100"
+                                 style="border: #00CCFF; background-color: #0b0b0b">
+                                <div class="card-front " style="background-color: #0b0b0b">
+                                    <div class="card-body">
+                                        <img src="{{ movie.film.poster.url }}" alt="" style="max-width: 210px">
+                                    </div>
+                                </div>
+                                <div class="card-back" style="background-color: #0b0b0b">
+                                    <div class="card-body" style="background-color: #0b0b0b">
+                                        <h3 class="card-title">{{ movie.film.title }}</h3>
+                                        <p class="card-text">{{ movie.film.body|truncatechars:180 }}</p>
+                                        <form id="form-watch-{{ movie.film.id }}" method='post'
+                                              style="padding-left: 40px;">{% csrf_token %}
+                                            <button style="background-color: transparent; border: transparent; margin-left: 25px"
+                                                    onclick="remove_watchlist({{ movie.film.id }})"
+                                                    class="btn btn-secondary" value="{{ movie.film.id }}">
+                                                <i class="fas fa-eye fa-3x"></i>
+                                            </button>
+                                            <p class="text-muted" style="margin-left: 33px; margin-top: -5px">
+                                                Watch</p>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
+
+
+                {% endfor %}
+
+            </div>
+        </div>
+        <div id="lists" class="city" style="display:none">
+            <h2 style="text-align: center"> Lists</h2>
+            <hr style="color: #717677; border: 1px solid">
+            {% for list,name,date  in list_films %}
+
+                <div id="card-{{ name.id }}" class="card mb-3" style="width: 50rem; border-color: #222">
+                    <div class="card-body" style="background-color: #222;">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <p><a href="{% url 'profile:list detail' id=name.id %}">{{ name }}</a> <a
+                                        href="#"
+                                        style="color: #828282; margin-left: 10px"
+                                        onclick="DeleteList({{ name.id }});"><i
+                                        class="fas fa-trash-alt"></i></a></p>
+                                <div class="row no-gutters" style="background-color: #0b0b0b">
+                                    {% if list %}
+                                        {% for film_list in list %}
+
+                                            <div class="col-md-4">
+                                                <img src="{{ film_list.film.poster.url }}" class="card-img"
+                                                     alt="...">
+                                            </div>
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="col-md-8">
+                                <p style="margin-left: 20px">
+                                    Created: <span class="date"><span
+                                        class="icon-calendar"></span> {{ date }}</span>
+                                </p>
+                                <a href="{% url 'profile:list detail' id=name.id %}"><p
+                                        style="margin-left: 20px">{{ name.body }}</p></a>
+                                <p style="margin-left: 20px">created by <i>{{ name.user.username }}</i> <img
+                                        src="{{ name.user.profile.picture.url }}"
+                                        style="width: 5%;border-radius: 100%; margin-left: 5px" alt="">
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr id="hr-{{ name.id }}" style="color: #717677; border: 1px solid">
+
+
+
+            {% endfor %}
+
         </div>
     </div>
 
 
-    <ul class="nav ">
-        <li class="nav-item">
-            <a class="nav-link " href="{% url 'profile:watched films' %}">Watched</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{% url 'profile:reviews' %}">Reviews</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{% url 'profile:watchlist' %}">Watchlist</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{% url 'profile:lists' %}">Lists</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#">Likes</a>
-        </li>
+    <script>
+        function openCity(cityName) {
+            var i;
+            var x = document.getElementsByClassName("city");
+            for (i = 0; i < x.length; i++) {
+                x[i].style.display = "none";
+            }
+            document.getElementById(cityName).style.display = "block";
+        }
+    </script>
 
-    </ul>
+    <script>
+        function DeleteReview(review_id) {
+
+            bootbox.confirm({
+                title: "Delete Review?",
+                message: '<p style="color: #0b0b0b; text-align: center"> Do you really want to delete record? This cannot be undone.</p>',
+                buttons: {
+                    cancel: {
+                        label: '<i class="fa fa-times"></i> Cancel'
+                    },
+                    confirm: {
+                        label: '<i class="fa fa-check"></i> Confirm'
+                    }
+                },
+                callback: function (result) {
+                    if (result) {
+                        $.ajax({
+                            type: "POST",
+                            url: "{% url 'profile:delete review ajax' %}",
+                            data: {
+                                review_id: review_id,
+                                'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+                            },
+                            datatype: 'json',
+                            success: function (data) {
+                                if (data['success']) {
+
+                                    $("#review-card-" + review_id).remove()
 
 
+                                }
+
+
+                            }
+                        });
+                    } else {
+                        bootbox.alert({
+                            message: '<p style="color: #0b0b0b; text-align: center; margin-top: 50px">Record not deleted.</p>'
+                        });
+                    }
+                }
+            });
+
+        }
+    </script>
+    <script>
+
+        function remove_watchlist(film_id) {
+            console.log("#movie-card" + film_id);
+            $.ajax({
+                type: "POST",
+                url: "{% url 'profile:watchlist ajax' %}",
+                data: {
+                    film_id: film_id,
+                    'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+                },
+                datatype: 'json',
+                success: function (data) {
+                    if (data['success']) {
+                        $("#movie-card" + film_id).remove();
+
+
+                    }
+
+                }
+            });
+        }
+
+    </script>
+    <script>
+        function DeleteList(name_id) {
+
+            bootbox.confirm({
+                title: "Delete List?",
+                message: '<p style="color: #0b0b0b; text-align: center"> Do you really want to delete record? This cannot be undone.</p>',
+                buttons: {
+                    cancel: {
+                        label: '<i class="fa fa-times"></i> Cancel'
+                    },
+                    confirm: {
+                        label: '<i class="fa fa-check"></i> Confirm'
+                    }
+                },
+                callback: function (result) {
+                    if (result) {
+                        console.log("calisti");
+                        $.ajax({
+                            type: "POST",
+                            url: "{% url 'profile:delete_list_ajax' %}",
+                            data: {
+                                name_id: name_id,
+                                'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+                            },
+                            datatype: 'json',
+                            success: function (data) {
+                                if (data['success']) {
+
+                                    $("#card-" + name_id).remove()
+                                    $("#hr-" + name_id).remove()
+
+
+                                }
+
+
+                            }
+                        });
+                    } else {
+                        bootbox.alert({
+                            message: '<p style="color: #0b0b0b; text-align: center; margin-top: 50px">Record not deleted.</p>'
+                        });
+                    }
+                }
+            });
+
+        }
+    </script>
 
 
 

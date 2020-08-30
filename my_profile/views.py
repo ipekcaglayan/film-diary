@@ -8,7 +8,19 @@ from django.http import JsonResponse
 
 def my_profile(request):
     user = request.user
-    return render(request, 'my_profile/my_profile.html', {'user': user})
+    seen_films = SeenFilm.objects.filter(user=request.user)
+    reviews = Review.objects.filter(author=request.user).order_by('date')
+    movies = Watch.objects.filter(user=request.user)
+    list_names = ListName.objects.filter(user=request.user)
+    list_films = []
+    for name in list_names:
+        if list(FilmList.objects.filter(list=name)):
+            list_films.append((list(FilmList.objects.filter(list=name)[:3]), name, name.date))
+        else:
+            list_films.append(([], name, name.date))
+    return render(request, 'my_profile/my_profile.html',
+                  {'user': user, 'seen_films': seen_films, 'reviews': reviews, 'movies': movies,
+                   'list_films': list_films})
 
 
 def reviews(request):
@@ -82,13 +94,24 @@ def watched_button_ajax(request):
 
 def user_lists(request):
     list_names = ListName.objects.filter(user=request.user)
-    return render(request, 'films/user_lists.html', {'list_names': list_names})
+    list_films = []
+    for name in list_names:
+        if list(FilmList.objects.filter(list=name)):
+            list_films.append((list(FilmList.objects.filter(list=name)[:3]), name, name.date))
+        else:
+            list_films.append(([], name, name.date))
+    return render(request, 'films/user_lists.html', {'list_films': list_films})
 
 
 def list_detail(request, id):
     list_name = ListName.objects.get(id=id)
     list_films = FilmList.objects.filter(list=list_name)
-    return render(request, 'films/list_detail.html', {'list_films': list_films, 'list_name': list_name})
+    if list(FilmList.objects.filter(list=list_name)):
+        last_added = FilmList.objects.filter(list=list_name).order_by('-date')[0]
+        return render(request, 'films/list_detail.html',
+                      {'list_films': list_films, 'list_name': list_name, 'last_update': last_added.date})
+    return render(request, 'films/list_detail.html',
+                  {'list_films': list_films, 'list_name': list_name})
 
 
 def create_list(request):
@@ -133,10 +156,6 @@ def like_button_ajax(request):
     return JsonResponse(data)
 
 
-def resume(request):
-    return render(request, 'homepage/resume.html')
-
-
 def watchlist_ajax(request):
     data = {'success': False}
     if request.method == 'POST':
@@ -160,4 +179,52 @@ def watch_later_ajax(request):
         else:
             watch_list.delete()
             data['success'] = False
+    return JsonResponse(data)
+
+
+def remove_list_ajax(request):
+    data = {'success': False}
+    if request.method == 'POST':
+        film_id = request.POST['film_id']
+        list_name = request.POST['list_name']
+        film = Film.objects.get(id=film_id)
+        film_list = ListName.objects.get(list_name=list_name)
+        FilmList.objects.get(film=film, list=film_list).delete()
+        data['success'] = True
+
+    return JsonResponse(data)
+
+
+def delete_list_ajax(request):
+    data = {'success': False}
+    if request.method == 'POST':
+        name_id = request.POST['name_id']
+        ListName.objects.get(id=int(name_id)).delete()
+        data['success'] = True
+
+    return JsonResponse(data)
+
+
+def watched_ajax(request):
+    data = {'success': True}
+    if request.method == 'POST':
+        film_id = request.POST['film_id']
+        film = Film.objects.get(id=film_id)
+        watched = SeenFilm.objects.filter(film=film, user=request.user)
+        if not list(watched):
+            SeenFilm.objects.create(film=film, user=request.user)
+            data['success'] = True
+        else:
+            watched.delete()
+            data['success'] = False
+    return JsonResponse(data)
+
+
+def delete_review_ajax(request):
+    data = {'success': False}
+    if request.method == 'POST':
+        review_id = request.POST['review_id']
+        Review.objects.get(id=review_id).delete()
+        data['success'] = True
+
     return JsonResponse(data)

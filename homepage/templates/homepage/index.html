@@ -187,16 +187,18 @@
                                                                       class="film">{{ review.film.title }}</a></h5>
                                             <h6 class="text-muted">
                                                 {% if review.rating %}
-                                                    ⭐ {{ review.rating }}
+                                                    <i style="margin-right:5px; color: #fddb3a " class="fas fa-star"></i> {{ review.rating }}
                                                 {% endif %}
                                             </h6>
                                             <p class="card-text"><a
                                                     href="{% url 'profile:detail' id=review.id %}">{{ review.body|truncatechars:50 }}</a>
                                             </p>
-                                            <p class="card-text"><small class="text-muted">reviewed
+                                            <p class="card-text">
+                                                <small class="text-muted">reviewed
                                                 by {{ review.author }} </small>
                                                 <img src="{{ review.author.profile.picture.url }}"
                                                      style="width: 10%; border-radius: 100%; margin-left: 7px" alt="">
+
                                             </p>
                                         </div>
                                     </div>
@@ -251,9 +253,11 @@
             {% endfor %}
             {% for name in list_names %}
                 <div class="col-md-4">
-                    <p style="margin-top: -5px"><a href="{% url 'profile:list detail' id=name.id %}">{{ name.list_name }}</a></p>
+                    <p style="margin-top: -5px"><a
+                            href="{% url 'profile:list detail' id=name.id %}">{{ name.list_name }}</a></p>
                     <p style="margin-top: -7px">{{ name.user.username }} <img src="{{ name.user.profile.picture.url }}"
-                                                     style="width:8%; border-radius: 100%; margin-left: 5px" alt="">
+                                                                              style="width:8%; border-radius: 100%; margin-left: 5px"
+                                                                              alt="">
                     </p>
                 </div>
             {% endfor %}
@@ -736,5 +740,4 @@
     <!-- Google Map -->
     <!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script>
         <script src="js/google-map.js"></script> -->
-
 {% endblock %}

@@ -48,7 +48,7 @@
                             <a class="dropdown-item" href="{% url 'profile:profile' %}">My Profile</a>
                             <a class="dropdown-item" href="{% url 'profile:reviews' %}">Reviews</a>
                             <a class="dropdown-item" href="{% url 'profile:watchlist' %}">Watchlist</a>
-                            <a class="dropdown-item" href="{% url 'profile:watchlist' %}">Lists</a>
+                            <a class="dropdown-item" href="{% url 'profile:lists' %}">Lists</a>
                             <a class="dropdown-item" href="{% url 'accounts:logout' %}">Log Out</a>
                         </div>
                     </li>
@@ -74,5 +74,10 @@
 {% block body %}
 {% endblock %}
 <script src="https://kit.fontawesome.com/32ba8fb0fe.js" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/5.4.0/bootbox.min.js"
+        integrity="sha512-8vfyGnaOX2EeMypNMptU+MwwK206Jk1I/tMQV4NkhOz+W8glENoMhGyU6n/6VgQUhQcJH8NqQgHhMtZjJJBv3A=="
+        crossorigin="anonymous"></script>
+<script src={% static 'bootbox.min.js' %}></script>
 </body>
 </html>

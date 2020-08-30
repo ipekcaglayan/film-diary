@@ -1,33 +1,5 @@
-.reviews{
-    alignment: center;
-
-}
-.card-text{
-    font-family: 'Neuton', serif;
-    font-size: larger;
-    font-weight: bolder;
-    color: #4d4c7d;
-
-}
-
-.card{
-    background-color: #dbc6eb;
-}
-.film-title{
-    color: #fbfbfb;
-    background-color: #548c9cc2;
-
-}
-h1{
-    font-family: 'Permanent Marker', cursive;
-    color: #e8e4e1;
-    padding-left: 800px;
-    margin-top: 100px;
-    margin-bottom: 20px;
-}
-.add-review{
-    padding-left: 830px;
-    margin-top: 100px;
-    margin-bottom: 20px;
-    color: #dbc6eb;
+.delete-icon {
+    position: absolute;
+    left: 750px;
+    top: 250px;
 }
