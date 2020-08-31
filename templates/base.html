@@ -39,16 +39,16 @@
                 <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
                 {% if user.is_authenticated %}
                     <li class="nav-item active dropdown" style="padding-right: 20px;">
-                        <a class="nav-link dropdown-toggle" href="{% url 'profile:profile' %}"
+                        <a class="nav-link dropdown-toggle" href="{% url 'profile:profile' city='wacthed' %}"
                            id="navbarDropdownMenuLink"
                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             {{ user }}
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                            <a class="dropdown-item" href="{% url 'profile:profile' %}">My Profile</a>
-                            <a class="dropdown-item" href="{% url 'profile:reviews' %}">Reviews</a>
-                            <a class="dropdown-item" href="{% url 'profile:watchlist' %}">Watchlist</a>
-                            <a class="dropdown-item" href="{% url 'profile:lists' %}">Lists</a>
+                            <a class="dropdown-item" href="{% url 'profile:profile' city='watched' %}">My Profile</a>
+                            <a class="dropdown-item" href="{% url 'profile:profile' city='reviews' %}">Reviews</a>
+                            <a class="dropdown-item" href="{% url 'profile:profile' city='watchlist' %}">Watchlist</a>
+                            <a class="dropdown-item" href="{% url 'profile:profile' city='lists' %}">Lists</a>
                             <a class="dropdown-item" href="{% url 'accounts:logout' %}">Log Out</a>
                         </div>
                     </li>

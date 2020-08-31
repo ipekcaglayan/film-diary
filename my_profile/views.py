@@ -6,7 +6,7 @@ from . import forms
 from django.http import JsonResponse
 
 
-def my_profile(request):
+def my_profile(request, city):
     user = request.user
     seen_films = SeenFilm.objects.filter(user=request.user)
     reviews = Review.objects.filter(author=request.user).order_by('date')
@@ -20,7 +20,7 @@ def my_profile(request):
             list_films.append(([], name, name.date))
     return render(request, 'my_profile/my_profile.html',
                   {'user': user, 'seen_films': seen_films, 'reviews': reviews, 'movies': movies,
-                   'list_films': list_films})
+                   'list_films': list_films, 'city': city})
 
 
 def reviews(request):

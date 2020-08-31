@@ -222,7 +222,11 @@
 
 
     <script>
+        $(document).ready(function (){
+            openCity("{{ city }}");
+        });
         function openCity(cityName) {
+            console.log(cityName);
             var i;
             var x = document.getElementsByClassName("city");
             for (i = 0; i < x.length; i++) {
