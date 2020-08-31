@@ -4,82 +4,121 @@ from films.models import Film, ListName, FilmList, FilmLike
 from accounts.models import Profile
 from . import forms
 from django.http import JsonResponse
+from django.views import View
 
 
-def my_profile(request, city):
-    user = request.user
-    seen_films = SeenFilm.objects.filter(user=request.user)
-    reviews = Review.objects.filter(author=request.user).order_by('date')
-    movies = Watch.objects.filter(user=request.user)
-    list_names = ListName.objects.filter(user=request.user)
-    list_films = []
-    for name in list_names:
-        if list(FilmList.objects.filter(list=name)):
-            list_films.append((list(FilmList.objects.filter(list=name)[:3]), name, name.date))
-        else:
-            list_films.append(([], name, name.date))
-    return render(request, 'my_profile/my_profile.html',
-                  {'user': user, 'seen_films': seen_films, 'reviews': reviews, 'movies': movies,
-                   'list_films': list_films, 'city': city})
+class MyProfile(View):
+    def get(self, request, city):
+        user = request.user
+        seen_films = SeenFilm.objects.filter(user=request.user)
+        reviews = Review.objects.filter(author=request.user).order_by('date')
+        movies = Watch.objects.filter(user=request.user)
+        list_names = ListName.objects.filter(user=request.user)
+        list_films = []
+        for name in list_names:
+            if list(FilmList.objects.filter(list=name)):
+                list_films.append((list(FilmList.objects.filter(list=name)[:3]), name, name.date))
+            else:
+                list_films.append(([], name, name.date))
+        return render(request, 'my_profile/my_profile.html',
+                      {'user': user, 'seen_films': seen_films, 'reviews': reviews, 'movies': movies,
+                       'list_films': list_films, 'city': city})
 
 
-def reviews(request):
-    reviews = Review.objects.filter(author=request.user).order_by('date')
-    return render(request, 'my_profile/reviews.html', {'reviews': reviews})
+# def my_profile(request, city):
+#     user = request.user
+#     seen_films = SeenFilm.objects.filter(user=request.user)
+#     reviews = Review.objects.filter(author=request.user).order_by('date')
+#     movies = Watch.objects.filter(user=request.user)
+#     list_names = ListName.objects.filter(user=request.user)
+#     list_films = []
+#     for name in list_names:
+#         if list(FilmList.objects.filter(list=name)):
+#             list_films.append((list(FilmList.objects.filter(list=name)[:3]), name, name.date))
+#         else:
+#             list_films.append(([], name, name.date))
+#     return render(request, 'my_profile/my_profile.html',
+#                   {'user': user, 'seen_films': seen_films, 'reviews': reviews, 'movies': movies,
+#                    'list_films': list_films, 'city': city})
 
 
-def watchlist(request):
-    movies = Watch.objects.filter(user=request.user)
-    return render(request, 'my_profile/watchlist.html', {'movies': movies})
+# def reviews(request):
+#     reviews = Review.objects.filter(author=request.user).order_by('date')
+#     return render(request, 'my_profile/reviews.html', {'reviews': reviews})
+
+# def watchlist(request):
+#     movies = Watch.objects.filter(user=request.user)
+#     return render(request, 'my_profile/watchlist.html', {'movies': movies})
+
+class ReviewDetail(View):
+    def get(self, request, id):
+        review = Review.objects.get(id=id)
+        return render(request, 'my_profile/review_detail.html', {'review': review})
 
 
-def review_detail(request, id):
-    review = Review.objects.get(id=id)
-    return render(request, 'my_profile/review_detail.html', {'review': review})
+# def review_detail(request, id):
+#     review = Review.objects.get(id=id)
+#     return render(request, 'my_profile/review_detail.html', {'review': review})
 
 
-def watch_later(request):
-    if request.method == 'POST':
-        form = forms.AddFilm(request.POST, request.FILES)
-        if form.is_valid():
-            instance = form.save(commit=False)
-            instance.user = request.user
-            instance.save()
-            return redirect('profile:watchlist')
-    else:
-        form = forms.AddFilm()
-    return render(request, "my_profile/add_watchlater.html", {'form': form})
+# def watch_later(request):
+#     if request.method == 'POST':
+#         form = forms.AddFilm(request.POST, request.FILES)
+#         if form.is_valid():
+#             instance = form.save(commit=False)
+#             instance.user = request.user
+#             instance.save()
+#             return redirect('profile:watchlist')
+#     else:
+#         form = forms.AddFilm()
+#     return render(request, "my_profile/add_watchlater.html", {'form': form})
+
+# class AddReviewAjax(View):
+#     def post(self, request):
+#         data = {'success': False}
+#         film_id = request.POST['film_id']
+#         film = Film.objects.get(id=film_id)
+#         form = forms.AddReview(request.POST, request.FILES)
+#         if form.is_valid():
+#             instance = form.save(commit=False)
+#             instance.author = request.user
+#             instance.film = film
+#             instance.save()
+#             SeenFilm.objects.create(film=instance.film, user=request.user)
+#         return JsonResponse(data)
 
 
-def add_review(request):
+def add_review(request, id):
     if request.method == 'POST':
         form = forms.AddReview(request.POST, request.FILES)
         if form.is_valid():
+            film = Film.objects.get(id=id)
             instance = form.save(commit=False)
             instance.author = request.user
+            instance.film = film
             instance.save()
-            SeenFilm.objects.create(film=instance.film, user=request.user)
-            return redirect('profile:reviews')
+            SeenFilm.objects.create(film=film, user=request.user)
+            return redirect('films:detail', id=id)
     else:
         form = forms.AddReview()
-    return render(request, "my_profile/add_review.html", {'form': form})
+    return render(request, "my_profile/add_review.html", {'form': form, 'id': id})
 
 
-def edit_review(request, id):
-    review = Review.objects.get(id=id)
-    if request.method == 'POST':
-        form = forms.EditReview(request.POST, request.FILES, instance=review)
-        if form.is_valid():
-            form.save()
-            return redirect('profile:reviews')
-    else:
-        form = forms.EditReview(instance=review)
-        return render(request, 'my_profile/edit_review.html', {'form': form})
+# def edit_review(request, id):
+#     review = Review.objects.get(id=id)
+#     if request.method == 'POST':
+#         form = forms.EditReview(request.POST, request.FILES, instance=review)
+#         if form.is_valid():
+#             form.save()
+#             return redirect('profile:reviews')
+#     else:
+#         form = forms.EditReview(instance=review)
+#         return render(request, 'my_profile/edit_review.html', {'form': form})
 
 
-def watched_button_ajax(request):
-    data = {'success': True}
-    if request.method == 'POST':
+class WatchedButtonAjax(View):
+    def post(self, request):
+        data = {'success': True}
         film_id = request.POST['film_id']
         film = Film.objects.get(id=film_id)
         added = SeenFilm.objects.filter(film=film, user=request.user)
@@ -89,61 +128,87 @@ def watched_button_ajax(request):
         else:
             added.delete()
             data['success'] = False
-    return JsonResponse(data)
+        return JsonResponse(data)
 
 
-def user_lists(request):
-    list_names = ListName.objects.filter(user=request.user)
-    list_films = []
-    for name in list_names:
-        if list(FilmList.objects.filter(list=name)):
-            list_films.append((list(FilmList.objects.filter(list=name)[:3]), name, name.date))
-        else:
-            list_films.append(([], name, name.date))
-    return render(request, 'films/user_lists.html', {'list_films': list_films})
+# def watched_button_ajax(request):
+#     data = {'success': True}
+#     if request.method == 'POST':
+#         film_id = request.POST['film_id']
+#         film = Film.objects.get(id=film_id)
+#         added = SeenFilm.objects.filter(film=film, user=request.user)
+#         if not list(added):
+#             SeenFilm.objects.create(film=film, user=request.user)
+#             data['success'] = True
+#         else:
+#             added.delete()
+#             data['success'] = False
+#     return JsonResponse(data)
 
 
-def list_detail(request, id):
-    list_name = ListName.objects.get(id=id)
-    list_films = FilmList.objects.filter(list=list_name)
-    if list(FilmList.objects.filter(list=list_name)):
-        last_added = FilmList.objects.filter(list=list_name).order_by('-date')[0]
+# def user_lists(request):
+#     list_names = ListName.objects.filter(user=request.user)
+#     list_films = []
+#     for name in list_names:
+#         if list(FilmList.objects.filter(list=name)):
+#             list_films.append((list(FilmList.objects.filter(list=name)[:3]), name, name.date))
+#         else:
+#             list_films.append(([], name, name.date))
+#     return render(request, 'films/user_lists.html', {'list_films': list_films})
+
+
+class ListDetail(View):
+    def get(self, request, id):
+        list_name = ListName.objects.get(id=id)
+        list_films = FilmList.objects.filter(list=list_name)
+        if list(FilmList.objects.filter(list=list_name)):
+            last_added = FilmList.objects.filter(list=list_name).order_by('-date')[0]
+            return render(request, 'films/list_detail.html',
+                          {'list_films': list_films, 'list_name': list_name, 'last_update': last_added.date})
         return render(request, 'films/list_detail.html',
-                      {'list_films': list_films, 'list_name': list_name, 'last_update': last_added.date})
-    return render(request, 'films/list_detail.html',
-                  {'list_films': list_films, 'list_name': list_name})
+                      {'list_films': list_films, 'list_name': list_name})
 
 
-def create_list(request):
-    if request.method == 'POST':
-        form = forms.CreateList(request.POST, request.FILES)
-        if form.is_valid():
-            instance = form.save(commit=False)
-            instance.user = request.user
-            instance.save()
-            return redirect('profile:lists')
-    else:
-        form = forms.CreateList()
-    return render(request, "films/create_list.html", {'form': form})
+# def list_detail(request, id):
+#     list_name = ListName.objects.get(id=id)
+#     list_films = FilmList.objects.filter(list=list_name)
+#     if list(FilmList.objects.filter(list=list_name)):
+#         last_added = FilmList.objects.filter(list=list_name).order_by('-date')[0]
+#         return render(request, 'films/list_detail.html',
+#                       {'list_films': list_films, 'list_name': list_name, 'last_update': last_added.date})
+#     return render(request, 'films/list_detail.html',
+#                   {'list_films': list_films, 'list_name': list_name})
 
 
-def film_to_list(request, id):
-    list_name = ListName.objects.get(id=id)
-    if request.method == 'POST':
-        form = forms.FilmToList(request.POST, request.FILES)
-        if form.is_valid():
-            instance = form.save(commit=False)
-            instance.list = list_name
-            instance.save()
-            return redirect('profile:lists')
-    else:
-        form = forms.FilmToList()
-    return render(request, "films/list_to_film.html", {'form': form, 'list_name': list_name})
+# def create_list(request):
+#     if request.method == 'POST':
+#         form = forms.CreateList(request.POST, request.FILES)
+#         if form.is_valid():
+#             instance = form.save(commit=False)
+#             instance.user = request.user
+#             instance.save()
+#             return redirect('profile:lists')
+#     else:
+#         form = forms.CreateList()
+#     return render(request, "films/create_list.html", {'form': form})
 
 
-def like_button_ajax(request):
-    data = {'success': True}
-    if request.method == 'POST':
+# def film_to_list(request, id):
+#     list_name = ListName.objects.get(id=id)
+#     if request.method == 'POST':
+#         form = forms.FilmToList(request.POST, request.FILES)
+#         if form.is_valid():
+#             instance = form.save(commit=False)
+#             instance.list = list_name
+#             instance.save()
+#             return redirect('profile:lists')
+#     else:
+#         form = forms.FilmToList()
+#     return render(request, "films/list_to_film.html", {'form': form, 'list_name': list_name})
+
+class LikeButtonAjax(View):
+    def post(self, request):
+        data = {'success': True}
         film_id = request.POST['film_id']
         film = Film.objects.get(id=film_id)
         liked = FilmLike.objects.filter(film=film, user=request.user)
@@ -153,23 +218,47 @@ def like_button_ajax(request):
         else:
             liked.delete()
             data['success'] = False
-    return JsonResponse(data)
+        return JsonResponse(data)
 
 
-def watchlist_ajax(request):
-    data = {'success': False}
-    if request.method == 'POST':
+# def like_button_ajax(request):
+#     data = {'success': True}
+#     if request.method == 'POST':
+#         film_id = request.POST['film_id']
+#         film = Film.objects.get(id=film_id)
+#         liked = FilmLike.objects.filter(film=film, user=request.user)
+#         if not list(liked):
+#             FilmLike.objects.create(film=film, user=request.user)
+#             data['success'] = True
+#         else:
+#             liked.delete()
+#             data['success'] = False
+#     return JsonResponse(data)
+
+class WatchlistAjax(View):
+    def post(self, request):
+        data = {'success': False}
         film_id = request.POST['film_id']
         film = Film.objects.get(id=film_id)
         Watch.objects.get(film=film).delete()
         data['success'] = True
+        return JsonResponse(data)
 
-    return JsonResponse(data)
+
+# def watchlist_ajax(request):
+#     data = {'success': False}
+#     if request.method == 'POST':
+#         film_id = request.POST['film_id']
+#         film = Film.objects.get(id=film_id)
+#         Watch.objects.get(film=film).delete()
+#         data['success'] = True
+#
+#     return JsonResponse(data)
 
 
-def watch_later_ajax(request):
-    data = {'success': True}
-    if request.method == 'POST':
+class WatchLaterAjax(View):
+    def post(self, request):
+        data = {'success': True}
         film_id = request.POST['film_id']
         film = Film.objects.get(id=film_id)
         watch_list = Watch.objects.filter(film=film, user=request.user)
@@ -179,35 +268,71 @@ def watch_later_ajax(request):
         else:
             watch_list.delete()
             data['success'] = False
-    return JsonResponse(data)
+        return JsonResponse(data)
 
 
-def remove_list_ajax(request):
-    data = {'success': False}
-    if request.method == 'POST':
-        film_id = request.POST['film_id']
-        list_name = request.POST['list_name']
-        film = Film.objects.get(id=film_id)
-        film_list = ListName.objects.get(list_name=list_name)
-        FilmList.objects.get(film=film, list=film_list).delete()
-        data['success'] = True
+# def watch_later_ajax(request):
+#     data = {'success': True}
+#     if request.method == 'POST':
+#         film_id = request.POST['film_id']
+#         film = Film.objects.get(id=film_id)
+#         watch_list = Watch.objects.filter(film=film, user=request.user)
+#         if not list(watch_list):
+#             Watch.objects.create(film=film, user=request.user)
+#             data['success'] = True
+#         else:
+#             watch_list.delete()
+#             data['success'] = False
+#     return JsonResponse(data)
 
-    return JsonResponse(data)
+class RemoveListAjax(View):
+    def post(self, request):
+        data = {'success': False}
+        if request.method == 'POST':
+            film_id = request.POST['film_id']
+            list_name = request.POST['list_name']
+            film = Film.objects.get(id=film_id)
+            film_list = ListName.objects.get(list_name=list_name)
+            FilmList.objects.get(film=film, list=film_list).delete()
+            data['success'] = True
+
+        return JsonResponse(data)
+
+    # def remove_list_ajax(request):
+    #     data = {'success': False}
+    #     if request.method == 'POST':
+    #         film_id = request.POST['film_id']
+    #         list_name = request.POST['list_name']
+    #         film = Film.objects.get(id=film_id)
+    #         film_list = ListName.objects.get(list_name=list_name)
+    #         FilmList.objects.get(film=film, list=film_list).delete()
+    #         data['success'] = True
+    #
+    #     return JsonResponse(data)
 
 
-def delete_list_ajax(request):
-    data = {'success': False}
-    if request.method == 'POST':
+class DeleteListAjax(View):
+    def post(self, request):
+        data = {'success': False}
         name_id = request.POST['name_id']
         ListName.objects.get(id=int(name_id)).delete()
         data['success'] = True
+        return JsonResponse(data)
 
-    return JsonResponse(data)
+
+# def delete_list_ajax(request):
+#     data = {'success': False}
+#     if request.method == 'POST':
+#         name_id = request.POST['name_id']
+#         ListName.objects.get(id=int(name_id)).delete()
+#         data['success'] = True
+#
+#     return JsonResponse(data)
 
 
-def watched_ajax(request):
-    data = {'success': True}
-    if request.method == 'POST':
+class WatchedAjax(View):
+    def post(self, request):
+        data = {'success': True}
         film_id = request.POST['film_id']
         film = Film.objects.get(id=film_id)
         watched = SeenFilm.objects.filter(film=film, user=request.user)
@@ -217,14 +342,36 @@ def watched_ajax(request):
         else:
             watched.delete()
             data['success'] = False
-    return JsonResponse(data)
+        return JsonResponse(data)
 
 
-def delete_review_ajax(request):
-    data = {'success': False}
-    if request.method == 'POST':
+# def watched_ajax(request):
+#     data = {'success': True}
+#     if request.method == 'POST':
+#         film_id = request.POST['film_id']
+#         film = Film.objects.get(id=film_id)
+#         watched = SeenFilm.objects.filter(film=film, user=request.user)
+#         if not list(watched):
+#             SeenFilm.objects.create(film=film, user=request.user)
+#             data['success'] = True
+#         else:
+#             watched.delete()
+#             data['success'] = False
+#     return JsonResponse(data)
+
+class DeleteReviewAjax(View):
+    def post(self, request):
+        data = {'success': False}
         review_id = request.POST['review_id']
         Review.objects.get(id=review_id).delete()
         data['success'] = True
+        return JsonResponse(data)
 
-    return JsonResponse(data)
+# def delete_review_ajax(request):
+#     data = {'success': False}
+#     if request.method == 'POST':
+#         review_id = request.POST['review_id']
+#         Review.objects.get(id=review_id).delete()
+#         data['success'] = True
+#
+#     return JsonResponse(data)

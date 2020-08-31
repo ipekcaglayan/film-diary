@@ -13,7 +13,7 @@ class AddFilm(forms.ModelForm):
 class AddReview(forms.ModelForm):
     class Meta:
         model = models.Review
-        fields = ['film', 'body', 'rating']
+        fields = ['body', 'rating']
 
 
 class EditReview(forms.ModelForm):

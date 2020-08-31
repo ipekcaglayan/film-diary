@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load crispy_forms_tags %}
 
 {% block head %}
     <link rel="stylesheet" href="{% static 'film_detail.css' %}?v1.1">
@@ -34,8 +35,8 @@
                                     {% else %}
 
                                         {% if added %}
+                                        id="watched-eye"
                                         href="#"
-
                                         style="margin-right: 25px; color: #0c8212"
                                         onclick="Watched({{ detailed_film.id }});"
                                         {% else %}
@@ -93,6 +94,15 @@
                             Watchlist</h6>
                         </p>
 
+                        <p>
+                        <form class="site-form" action="{% url 'profile:add review' id=detailed_film.id %}" method="post"
+                              enctype="multipart/form-data">
+                            {% csrf_token %}
+                            {{ form|crispy }}
+                            <input type="submit" class="btn-outline-primary" value="Add Review">
+
+                        </form></p>
+
 
 
                     {% endif %}
@@ -124,7 +134,8 @@
                                                           class="film">{{ review.film.title }}</a></h5>
                                 <h6 class="text-muted">
                                     {% if review.rating %}
-                                        <i style="margin-right:10px; color: #fddb3a " class="fas fa-star"></i>{{ review.rating }}
+                                        <i style="margin-right:10px; color: #fddb3a " class="fas fa-star"></i>
+                                        {{ review.rating }}
                                     {% endif %}
                                 </h6>
                                 <p class="card-text"><a
@@ -185,7 +196,7 @@
         }
 
         function Watched(film_id) {
-            console.log("ipek");
+            console.log("calisiyor mu");
             $.ajax({
                 type: "POST",
                 url: "{% url 'profile:watchedAjax' %}",
@@ -196,12 +207,14 @@
                 datatype: 'json',
                 success: function (data) {
                     if (data['success']) {
+                        console.log("alooo");
                         $("#watched-eye").css('color', '#0c8212')
                         $("#watched-eye").css('margin-left', '8px')
                         $("#watched-text").html("Watched")
 
 
                     } else {
+                        console.log("xxxxx");
                         $("#watched-eye").css('color', '#726f6f')
                         $("#watched-eye").css('margin-left', '3px')
                         $("#watched-text").html("Watch")

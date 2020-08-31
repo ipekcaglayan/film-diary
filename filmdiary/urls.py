@@ -15,23 +15,23 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from homepage import views as homepage_views
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.conf.urls.static import static
 from django.conf import settings
 from films import views as films_views
+from homepage.views import Homepage
 app_name = 'film diary'
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', homepage_views.homepage, name="home"),
+    path('', Homepage.as_view(), name="home"),
     path('my_profile/', include('my_profile.urls'), name='my profile'),
     path('accounts/', include('accounts.urls')),
     path('films/', include('films.urls')),
     path('genres/', films_views.genres, name='genres'),
-    path('genres/<int:id>', films_views.genre_detail, name="genre_detail"),
-    path('lists/', films_views.all_lists, name="all lists"),
+    path('genres/<int:id>', films_views.GenreDetail.as_view(), name="genre_detail"),
+    path('lists/', films_views.AllLists.as_view(), name="all lists"),
 
 ]
 urlpatterns += staticfiles_urlpatterns()

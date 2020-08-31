@@ -3,6 +3,6 @@
     width: 100%; /* Set full-width to expand the whole page */
 }
 
-#review-cell{
+#review-cell {
     display: table-cell; /* Make elements inside the container behave like table cells */
 }

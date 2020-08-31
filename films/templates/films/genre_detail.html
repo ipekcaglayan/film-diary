@@ -13,31 +13,33 @@
 
 
 
-<div class="container" style="margin-top:250px ">
-    <h1>{{ genre.name }}</h1>
-    <br>
-    <div class="row">
-        {% for film in genre_films %}
-            <div class="col-md-3" style="margin-bottom: 20px">
-                <div class="card card-flip h-100" style="border: #00CCFF; background-color: #0b0b0b">
-                    <div class="card-front " style="background-color: #0b0b0b">
-                        <div class="card-body">
-                            <img src="{{ film.poster.url }}" alt="" style="max-width: 210px">
+    <div class="container" style="margin-top:250px ">
+        <h1>{{ genre.name }}</h1>
+        <br>
+        <div class="row">
+            {% for film in genre_films %}
+                <div class="col-md-3" style="margin-bottom: 20px">
+                    <div class="card card-flip h-100" style="border: #00CCFF; background-color: #0b0b0b">
+                        <div class="card-front " style="background-color: #0b0b0b">
+                            <div class="card-body">
+                                <img src="{{ film.poster.url }}" alt="" style="max-width: 210px">
+                            </div>
                         </div>
-                    </div>
-                    <div class="card-back" style="background-color: #0b0b0b">
-                        <div class="card-body" style="background-color: #0b0b0b">
-                            <h3 class="card-title"><a href="{% url 'films:detail' id=film.id %}">{{ film.title }}</a>
-                            </h3>
-                            <p class="card-text">{{ film.body }}</p>
+                        <div class="card-back" style="background-color: #0b0b0b">
+                            <div class="card-body" style="background-color: #0b0b0b">
+                                <h3 class="card-title"><a
+                                        href="{% url 'films:detail' id=film.id %}">{{ film.title }}</a>
+                                </h3>
+                                <p class="card-text"><a style="color: #646464" href="{% url 'films:detail' id=film.id %}">{{ film.body }}</a>
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-        {% endfor %}
+            {% endfor %}
+        </div>
     </div>
-</div>
 
 
 

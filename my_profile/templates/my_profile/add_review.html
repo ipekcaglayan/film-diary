@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
-
+{% load crispy_forms_tags %}
 {% block body %}
   <div class="add-review">
       <h2>Reviews</h2>
-      <form class="site-form" action="{% url 'profile:add review' %}" method="post" enctype="multipart/form-data">
+      <form class="site-form" action="{% url 'profile:add review' id=id %}" method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        {{form}}
+        {{form|crispy}}
         <input type="submit" value="Add Review">
 
       </form>
