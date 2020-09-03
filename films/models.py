@@ -38,6 +38,9 @@ class FilmList(models.Model):
     film = models.ForeignKey(Film, on_delete=models.CASCADE)
     date = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        unique_together = ('list', 'film',)
+
     def __str__(self):
         return self.film.title
 
@@ -48,3 +51,11 @@ class FilmLike(models.Model):
 
     def __str__(self):
         return self.film.title
+
+
+class ListLike(models.Model):
+    list = models.ForeignKey(ListName, on_delete = models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.list.list_name

@@ -19,13 +19,13 @@ class AddReview(forms.ModelForm):
 class EditReview(forms.ModelForm):
     class Meta:
         model = models.Review
-        fields = ['film', 'body']
+        fields = ['body', 'rating']
 
 
 class CreateList(forms.ModelForm):
     class Meta:
         model = film_models.ListName
-        fields = ['list_name']
+        fields = ['list_name', 'body']
 
 
 class FilmToList(forms.ModelForm):

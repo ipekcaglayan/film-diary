@@ -3,7 +3,7 @@
 {% load crispy_forms_tags %}
 
 {% block head %}
-    <link rel="stylesheet" href="{% static 'film_detail.css' %}?v1.1">
+    <link rel="stylesheet" href="{% static 'film_detail.css' %}?v1.2">
     <title>{{ detailed_film.title }}</title>
     <link href="https://fonts.googleapis.com/css2?family=Neuton:wght@300&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap" rel="stylesheet">
@@ -95,13 +95,27 @@
                         </p>
 
                         <p>
-                        <form class="site-form" action="{% url 'profile:add review' id=detailed_film.id %}" method="post"
+                            {% if reviewed %}
+                                <a id="add-click" style="display: block" href="javascript:void();" onclick="AddReview()"> Add Another
+                                    Review</a>
+                            {% else %}
+                                <a id="add-click" style="display: block" href="javascript:void();" onclick="AddReview()"> Add Review</a>
+                            {% endif %}
+
+
+                        <form id="add-review-form" style="display: none" class="add-review-form"
+                              action="{% url 'profile:add review' id=detailed_film.id %}" method="post"
                               enctype="multipart/form-data">
                             {% csrf_token %}
                             {{ form|crispy }}
-                            <input type="submit" class="btn-outline-primary" value="Add Review">
+                            <input onclick="FormSubmitted()" type="submit" class="btn-outline-primary"
+                                   value="Add Review">
 
-                        </form></p>
+                        </form>
+
+
+
+                        </p>
 
 
 
@@ -121,7 +135,7 @@
              style="max-width: 1500px; margin-top: 100px; margin-bottom: 100px">
             <h3 style="text-align: center">Reviews</h3> <br>
             <div class="row">
-                {% for review in film_reviews %}
+                {% for review,review_liked in reviews_with_likes %}
 
                     <div id="review-cell" class="col-md-6">
                         <div id="card-{{ review.id }}" class="card mb-5 mr-5"
@@ -142,8 +156,20 @@
                                         href="{% url 'profile:detail' id=review.id %}">{{ review.body|truncatechars:200 }}</a>
                                 </p>
                                 <p class="card-text"><small class="text-muted">
+                                    {% if user.is_authenticated %}
+                                        <div class="like-btn" style="display: inline; margin-right: 10px">
+                                            <a href="javascript:void();" id="review-like-{{ review.id }}"
+                                                    {% if review_liked %}
+                                               style="color: #7c071b;display: inline"
+                                                    {% else %}
+                                               style="color: #726f6f;display:inline;"
+                                                    {% endif %}
+                                               onclick="ReviewLike({{ review.id }});"><i
+                                                    class="fas fa-heart fa-2x"></i></a>
+                                        </div>
+                                    {% endif %}
                                     {% if user == review.author %}
-                                        <a style="margin-right: 10px" href="#"
+                                        <a style="margin-right: 10px" href="javascript:void();"
                                            onclick="DeleteReview({{ review.id }});"><i
                                                 class="fas fa-trash-alt fa-2x"></i></a>
                                     {% endif %}
@@ -301,6 +327,49 @@
                 }
             });
 
+        }
+    </script>
+    <script>
+        function AddReview() {
+            $('#add-click').css('display', 'none');
+            $('#add-review-form').css('display', 'block');
+
+        }
+
+        function FormSubmitted() {
+            $('#add-click').css('display', 'block');
+            $('#add-click').html("Add Another Review");
+            $('#add-review-form').css('display', 'none');
+
+
+        }
+    </script>
+    <script>
+        function ReviewLike(review_id) {
+            $.ajax({
+                type: "POST",
+                url: "{% url 'profile:like review ajax' %}",
+                data: {
+                    review_id: review_id,
+                    'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+                },
+                datatype: 'json',
+                success: function (data) {
+                    if (data['success']) {
+                        $("#review-like-"+review_id).css('color', '#7c071b')
+
+
+
+                    } else {
+                        $("#review-like-"+review_id).css('color', '#726f6f')
+
+
+
+                    }
+
+
+                }
+            });
         }
     </script>
 

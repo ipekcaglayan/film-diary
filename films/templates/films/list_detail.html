@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load crispy_forms_tags %}
 {% load static %}
 {% block head %}
     <title>{{ list_name.list_name }}</title>
@@ -6,11 +7,27 @@
 {% endblock %}
 {% block body %}
     <div class="container" style="margin-top: 250px">
-       <p> <h2 style="display: inline; font-size: 75px">{{ list_name.list_name }} </h2>
-        <a href="#"
-           style="display: inline; color: #828282; margin-left: 10px; "
-           onclick="DeleteListDetail({{ list_name.id }});"><i
-                class="fas fa-trash-alt fa-2x"></i></a></p>
+        <p>
+        <h2 style="display: inline; font-size: 75px">{{ list_name.list_name }} </h2>
+        {% if user.is_authenticated %}
+            <div class="like-btn" style="display: inline">
+                <a href="#" id="list-like"
+                        {% if liked %}
+                   style="color: #7c071b;display: inline"
+                        {% else %}
+                   style="color: #726f6f;display:inline;"
+                        {% endif %}
+                   onclick="ListLike({{ list_name.id }});"><i
+                        class="fas fa-heart fa-2x"></i></a>
+            </div>
+        {% endif %}
+        {% if user.username == list_name.user.username %}
+            <a href="#"
+               style="display: inline; color: #828282; margin-left: 10px; "
+               onclick="DeleteListDetail({{ list_name.id }});"><i
+                    class="fas fa-trash-alt fa-2x"></i></a>
+        {% endif %}
+        </p>
         <p><i class="fas fa-pencil-alt mr-2"></i>created by <i><strong>{{ list_name.user }}</strong></i></p>
         {% if last_update %}
             <p class="text-muted"><i class="fas fa-edit mr-2"></i>Last Update: {{ last_update }}</p>
@@ -19,6 +36,17 @@
 
         <br>
         <p>{{ list_name.body }}</p> <br> <br>
+        {% if user.username == list_name.user.username %}
+            <form style="margin-bottom: 50px"
+                  action="{% url 'profile:film to list' id=list_name.id %}" method="post"
+                  enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <input type="submit" class="btn-outline-primary"
+                       value="Add Film">
+
+            </form>
+        {% endif %}
         <div class="row">
 
             {% for list in list_films %}
@@ -36,17 +64,18 @@
                                 <div class="card-body" style="background-color: #0b0b0b">
                                     <h3 class="card-title">{{ list.film.title }} </h3>
                                     <p class="card-text">{{ list.film.body|truncatechars:150 }}</p>
-
-                                    <form id="form-watch-{{ list.film.id }}" method='post'
-                                          style="padding-left: 40px;">{% csrf_token %}
-                                        <button style="background-color: transparent; border: transparent; margin-left: 25px; "
-                                                onclick="remove_list({{ list.film.id }})"
-                                                class="btn btn-secondary" value="{{ list.film.id }}">
-                                            <i class="fas fa-ban fa-3x"></i>
-                                        </button>
-                                        <p class="text-muted" style="margin-left: 26px; margin-top: -5px">
-                                            Remove</p>
-                                    </form>
+                                    {% if user.username == list_name.user.username %}
+                                        <form id="form-watch-{{ list.film.id }}" method='post'
+                                              style="padding-left: 40px;">{% csrf_token %}
+                                            <a href="#"
+                                               style="background-color: transparent; border: transparent; margin-left: 25px; "
+                                               onclick="RemoveList({{ list.film.id }})">
+                                                <i class="fas fa-ban fa-3x"></i>
+                                            </a>
+                                            <p class="text-muted" style="margin-left: 26px; margin-top: -5px">
+                                                Remove</p>
+                                        </form>
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
@@ -61,8 +90,8 @@
     </div>
     <script>
 
-        function remove_list(film_id) {
-            console.log("#movie-card" + film_id);
+        function RemoveList(film_id) {
+            console.log("hsjrsyrsjssuds");
             var list_name = '{{ list_name.list_name }}'
             $.ajax({
                 type: "POST",
@@ -114,7 +143,7 @@
                             success: function (data) {
                                 if (data['success']) {
 
-                                    window.location.href='{% url 'profile:lists' %}'
+                                    window.location.href = '{% url 'profile:profile' city='lists' %}'
 
 
                                 }
@@ -130,6 +159,32 @@
                 }
             });
 
+        }
+    </script>
+    <script>
+        function ListLike(list_name_id) {
+            $.ajax({
+                type: "POST",
+                url: "{% url 'profile:like list ajax' %}",
+                data: {
+                    list_name_id: list_name_id,
+                    'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+                },
+                datatype: 'json',
+                success: function (data) {
+                    if (data['success']) {
+                        $("#list-like").css('color', '#7c071b')
+
+
+                    } else {
+                        $("#list-like").css('color', '#726f6f')
+
+
+                    }
+
+
+                }
+            });
         }
     </script>
 {% endblock %}

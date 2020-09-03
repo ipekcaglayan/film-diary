@@ -1,7 +1,7 @@
 from django.db import models
 from films.models import Film
 from django.contrib.auth.models import User
-from django.core.validators import MaxValueValidator,MinValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 
 class Watch(models.Model):
@@ -29,6 +29,14 @@ class SeenFilm(models.Model):
 
     def __str__(self):
         return self.film.title
+
+
+class ReviewLike(models.Model):
+    review = models.ForeignKey(Review, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.review.film.title
 
 
 

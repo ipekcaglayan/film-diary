@@ -7,16 +7,17 @@
 {% block body %}
     <div class="container" id="lists" style="margin-bottom: 200px">
         <div class="row">
-            {% for list,name,date  in list_films %}
-                <a href="{% url 'profile:list detail' id=name.id %}">
-                    <div class="card mb-3" style="width: 50rem; border-color: #3f3f3f">
-                        <div class="card-body" style="background-color: #342f2f;">
-                            <div class="row">
+            {% for list,name,date,liked  in list_films %}
 
-                                <div class="col-md-3">
-                                    <p>{{ name }}</p>
+                <div class="card mb-3" style="width: 50rem; border-color: #3f3f3f">
+                    <div class="card-body" style="background-color: #342f2f;">
+                        <div class="row">
+
+                            <div class="col-md-4">
+                                <a href="{% url 'profile:list detail' id=name.id %}">{{ name }}</a>
+
+                                <a href="{% url 'profile:list detail' id=name.id %}">
                                     <div class="row no-gutters" style="background-color: #0b0b0b">
-
                                         {% for film_list in list %}
                                             <div class="col-md-4">
                                                 <img src="{{ film_list.film.poster.url }}" class="card-img" alt="...">
@@ -24,28 +25,70 @@
                                         {% endfor %}
 
                                     </div>
-                                </div>
+                                </a>
+                            </div>
+                            <div class="col-md-8">
+                                <p style="margin-left: 20px">
+                                    Last Update: <span class="date"><span
+                                        class="icon-calendar"></span> {{ date }}</span>
+                                </p>
+                                <a href="{% url 'profile:list detail' id=name.id %}"><p
+                                        style="margin-left: 20px">{{ name.body }}</p></a>
 
-                                <div class="col-md-9">
-                                    <p style="margin-left: 20px">
-                                        Last Update: <span class="date"><span
-                                            class="icon-calendar"></span> {{ date }}</span>
-                                    </p>
-                                    <p style="margin-left: 20px">{{ name.body }}</p>
-                                    <p style="margin-left: 20px">created by <i>{{ name.user.username }}</i> <img
-                                            src="{{ name.user.profile.picture.url }}"
-                                            style="width: 5%;border-radius: 100%; margin-left: 5px" alt="">
-                                    </p>
-                                </div>
+                                <p style="margin-left: 20px">created by <i>{{ name.user.username }}</i> <img
+                                        src="{{ name.user.profile.picture.url }}"
+                                        style="width: 5%;border-radius: 100%; margin-left: 5px" alt="">
+                                </p>
+
+                                <p style="margin-left: 20px">
+                                    {% if user.is_authenticated %}
+                                        <div class="list-like" id="like-{{ name.id }}" data-card="{{ name.id }}"
+                                                {% if liked %}
+                                             style="color: #7c071b; cursor: pointer;margin-left: 20px "
+                                                {% else %}
+                                             style="color: #726f6f; cursor: pointer; margin-left: 20px "
+                                                {% endif %}
+                                        >
+                                            <i class="fas fa-heart fa-1x"></i>
+                                        </div>
+
+                                    {% endif %}
+                                </p>
+
+
                             </div>
                         </div>
                     </div>
-                </a>
-
-
-
-
+                </div>
             {% endfor %}
         </div>
     </div>
+    <script>
+
+
+        $(".list-like").click(function () {
+            var thisId = $(this).data("card");
+            $.ajax({
+                type: "POST",
+                url: "{% url 'profile:like list ajax' %}",
+                data: {
+                    list_name_id: thisId,
+                    'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+                },
+                datatype: 'json',
+                success: function (data) {
+                    console.log('DATA: ' + data['success']);
+                    if (data['success']) {
+                        $('#like-' + thisId).css('color', '#7c071b')
+                    } else {
+                        $('#like-' + thisId).css('color', '#726f6f')
+                    }
+
+
+                }
+            });
+        });
+
+    </script>
+
 {% endblock %}

@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
-from .models import Film, Genre, FilmLike
-from my_profile.models import Review, SeenFilm, Watch
+from .models import Film, Genre, FilmLike, ListLike
+from my_profile.models import Review, SeenFilm, Watch, ReviewLike
 from films.models import FilmList, ListName
 from django.views import View
 from my_profile import forms
@@ -24,6 +24,7 @@ class FilmDetail(View):
         detailed_film = Film.objects.get(id=id)
         genres = detailed_film.genres.all()
         film_reviews = Review.objects.filter(film__title=detailed_film.title)
+        reviews_with_likes = []
         if request.user.is_authenticated:
             form = forms.AddReview()
             added_watchlist = list(Watch.objects.filter(user=request.user, film=detailed_film))
@@ -32,12 +33,17 @@ class FilmDetail(View):
                 review = reviewed[0]
             else:
                 review = []
+            if film_reviews:
+                for r in film_reviews:
+                    liked = list(ReviewLike.objects.filter(review=r, user=request.user))
+                    reviews_with_likes.append((r, liked))
             liked = list(FilmLike.objects.filter(film=detailed_film, user=request.user))
             added = list(SeenFilm.objects.filter(film=detailed_film, user=request.user))
             return render(request, 'films/film_detail.html',
                           {'detailed_film': detailed_film, 'genres': genres, 'film_reviews': film_reviews,
                            'added': added, 'reviewed': reviewed, 'review': review,
-                           'liked': liked, 'added_watchlist': added_watchlist, 'form': form})
+                           'liked': liked, 'added_watchlist': added_watchlist, 'form': form,
+                           'reviews_with_likes': reviews_with_likes})
 
         else:
             return render(request, 'films/film_detail.html',
@@ -103,10 +109,13 @@ class AllLists(View):
     def get(self, request):
         list_names = ListName.objects.all().order_by('-date')
         list_films = []
+
         for name in list_names:
+
             if list(FilmList.objects.filter(list=name)):
                 last_added = FilmList.objects.filter(list=name).order_by('-date')[0]
-                list_films.append((list(FilmList.objects.filter(list=name)[:3]), name, last_added.date))
+                list_films.append((list(FilmList.objects.filter(list=name)[:3]), name, last_added.date,
+                                   list(ListLike.objects.filter(list=name, user=request.user))))
         return render(request, 'films/all_lists.html', {'list_films': list_films})
 
 # def all_lists(request):
