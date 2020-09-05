@@ -13,8 +13,14 @@
             {{ form|crispy }}
             <button type="submit" class="submit-btn">Sign In</button>
         </form>
-    </div>
+        <br>
+        <p style="display: inline; margin-left: 385px">Don’t have an account?</p>
+        <a href="{% url 'accounts:signup' %}"
+           style="margin-left: 20px;display: inline;cursor: pointer">Sign Up
+        </a>
 
+
+    </div>
 
 
 {% endblock %}

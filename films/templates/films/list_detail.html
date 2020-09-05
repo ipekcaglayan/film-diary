@@ -11,24 +11,40 @@
         <h2 style="display: inline; font-size: 75px">{{ list_name.list_name }} </h2>
         {% if user.is_authenticated %}
             <div class="like-btn" style="display: inline">
-                <a href="#" id="list-like"
+                <div id="list-like"
                         {% if liked %}
-                   style="color: #7c071b;display: inline"
+                     style="color: #7c071b;display: inline"
                         {% else %}
-                   style="color: #726f6f;display:inline;"
+                     style="color: #726f6f;display:inline;"
                         {% endif %}
-                   onclick="ListLike({{ list_name.id }});"><i
-                        class="fas fa-heart fa-2x"></i></a>
+                     onclick="ListLike({{ list_name.id }});"><i
+                        class="fas fa-heart fa-2x"></i></div>
             </div>
-        {% endif %}
-        {% if user.username == list_name.user.username %}
-            <a href="#"
-               style="display: inline; color: #828282; margin-left: 10px; "
-               onclick="DeleteListDetail({{ list_name.id }});"><i
-                    class="fas fa-trash-alt fa-2x"></i></a>
+            {% if user.username == list_name.user.username %}
+                <div
+                        style="display: inline; color: #828282; margin-left: 10px; "
+                        onclick="DeleteListDetail({{ list_name.id }});"><i
+                        class="fas fa-trash-alt fa-2x"></i></div>
+            {% endif %}
+        {% else %}
+            <a href="{% url 'profile:like list ajax' %}" style="display: inline;color: #726f6f">
+                <i
+                        class="fas fa-heart fa-2x"></i>
+            </a>
+
         {% endif %}
         </p>
-        <p><i class="fas fa-pencil-alt mr-2"></i>created by <i><strong>{{ list_name.user }}</strong></i></p>
+        <p><i class="fas fa-pencil-alt mr-2"></i>created by <i><strong>
+            {% if user.is_authenticated %}
+                {% if user.username == list_name.user.username %}
+                    <a href="{% url 'profile:profile' city='watched' username=list_name.user.username %}">{{ list_name.user }}</a>
+                {% else %}
+                    <a href="{% url 'other_profile' username=list_name.user %}"> {{ list_name.user }}</a>
+                {% endif %}
+            {% else %}
+                <a href="{% url 'other_profile' username=list_name.user %}"> {{ list_name.user }}</a>
+            {% endif %}
+        </strong></i></p>
         {% if last_update %}
             <p class="text-muted"><i class="fas fa-edit mr-2"></i>Last Update: {{ last_update }}</p>
 
@@ -36,16 +52,18 @@
 
         <br>
         <p>{{ list_name.body }}</p> <br> <br>
-        {% if user.username == list_name.user.username %}
-            <form style="margin-bottom: 50px"
-                  action="{% url 'profile:film to list' id=list_name.id %}" method="post"
-                  enctype="multipart/form-data">
-                {% csrf_token %}
-                {{ form|crispy }}
-                <input type="submit" class="btn-outline-primary"
-                       value="Add Film">
+        {% if user.is_authenticated %}
+            {% if user.username == list_name.user.username %}
+                <form style="margin-bottom: 50px"
+                      action="{% url 'profile:film to list' id=list_name.id %}" method="post"
+                      enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <input type="submit" class="btn-outline-primary"
+                           value="Add Film">
 
-            </form>
+                </form>
+            {% endif %}
         {% endif %}
         <div class="row">
 
@@ -64,17 +82,19 @@
                                 <div class="card-body" style="background-color: #0b0b0b">
                                     <h3 class="card-title">{{ list.film.title }} </h3>
                                     <p class="card-text">{{ list.film.body|truncatechars:150 }}</p>
-                                    {% if user.username == list_name.user.username %}
-                                        <form id="form-watch-{{ list.film.id }}" method='post'
-                                              style="padding-left: 40px;">{% csrf_token %}
-                                            <a href="#"
-                                               style="background-color: transparent; border: transparent; margin-left: 25px; "
-                                               onclick="RemoveList({{ list.film.id }})">
-                                                <i class="fas fa-ban fa-3x"></i>
-                                            </a>
-                                            <p class="text-muted" style="margin-left: 26px; margin-top: -5px">
-                                                Remove</p>
-                                        </form>
+                                    {% if user.is_authenticated %}
+                                        {% if user.username == list_name.user.username %}
+                                            <form id="form-watch-{{ list.film.id }}" method='post'
+                                                  style="padding-left: 40px;">{% csrf_token %}
+                                                <div
+                                                        style="background-color: transparent; border: transparent; margin-left: 25px; "
+                                                        onclick="RemoveList({{ list.film.id }})">
+                                                    <i class="fas fa-ban fa-3x"></i>
+                                                </div>
+                                                <p class="text-muted" style="margin-left: 26px; margin-top: -5px">
+                                                    Remove</p>
+                                            </form>
+                                        {% endif %}
                                     {% endif %}
                                 </div>
                             </div>
@@ -143,7 +163,7 @@
                             success: function (data) {
                                 if (data['success']) {
 
-                                    window.location.href = '{% url 'profile:profile' city='lists' username=user.username %}'
+                                    window.location.href = '{% url 'profile:profile' city='lists' username=logged_user %}'
 
 
                                 }

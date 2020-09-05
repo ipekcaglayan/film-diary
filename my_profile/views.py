@@ -7,6 +7,7 @@ from . import forms
 from django.http import JsonResponse
 from django.views import View
 from django.db.models import Count
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 # list_names = ListName.objects.all().order_by('-date')
@@ -19,7 +20,7 @@ from django.db.models import Count
 #                 list_films.append((list(FilmList.objects.filter(list=name)[:3]), name, last_added.date,
 #                                    list(ListLike.objects.filter(list=name, user=request.user))))
 #         return render(request, 'films/all_lists.html', {'list_films': list_films})
-class MyProfile(View):
+class MyProfile(LoginRequiredMixin, View):
     def get(self, request, city, username):
         form = forms.CreateList()
         pp_form = forms.ProfilePicture()
@@ -97,9 +98,16 @@ class MyProfile(View):
 class ReviewDetail(View):
     def get(self, request, id):
         review = Review.objects.get(id=id)
-        liked = ReviewLike.objects.filter(review=review, user=request.user)
-        form = forms.EditReview()
-        return render(request, 'my_profile/review_detail.html', {'review': review, 'form': form, 'liked': liked})
+        if request.user.is_authenticated:
+            liked = ReviewLike.objects.filter(review=review, user=request.user)
+            if request.user == review.author:
+                form = forms.EditReview()
+                return render(request, 'my_profile/review_detail.html',
+                              {'review': review, 'form': form, 'liked': liked})
+            else:
+                return render(request, 'my_profile/review_detail.html', {'review': review, 'liked': liked})
+        else:
+            return render(request, 'my_profile/review_detail.html', {'review': review})
 
 
 # def review_detail(request, id):
@@ -133,7 +141,7 @@ class ReviewDetail(View):
 #             SeenFilm.objects.create(film=instance.film, user=request.user)
 #         return JsonResponse(data)
 
-class AddReview(View):
+class AddReview(LoginRequiredMixin, View):
     def post(self, request, id):
         form = forms.AddReview(request.POST, request.FILES)
         if form.is_valid():
@@ -166,20 +174,33 @@ class AddReview(View):
 #         form = forms.AddReview()
 #     return render(request, "my_profile/add_review.html", {'form': form, 'id': id})
 
+class EditReview(LoginRequiredMixin, View):
+    def get(self, request, id):
+        review = Review.objects.get(id=id)
+        form = forms.EditReview(instance=review)
+        return render(request, 'my_profile/edit_review.html', {'form': form})
 
-def edit_review(request, id):
-    review = Review.objects.get(id=id)
-    if request.method == 'POST':
+    def post(self, request, id):
+        review = Review.objects.get(id=id)
         form = forms.EditReview(request.POST, request.FILES, instance=review)
         if form.is_valid():
             form.save()
             return redirect('profile:detail', id=id)
-    else:
-        form = forms.EditReview(instance=review)
-        return render(request, 'my_profile/edit_review.html', {'form': form})
 
 
-class WatchedButtonAjax(View):
+# def edit_review(request, id):
+#     review = Review.objects.get(id=id)
+#     if request.method == 'POST':
+#         form = forms.EditReview(request.POST, request.FILES, instance=review)
+#         if form.is_valid():
+#             form.save()
+#             return redirect('profile:detail', id=id)
+#     else:
+#         form = forms.EditReview(instance=review)
+#         return render(request, 'my_profile/edit_review.html', {'form': form})
+
+
+class WatchedButtonAjax(LoginRequiredMixin, View):
     def post(self, request):
         data = {'success': True}
         film_id = request.POST['film_id']
@@ -222,18 +243,29 @@ class WatchedButtonAjax(View):
 
 class ListDetail(View):
     def get(self, request, id):
-        user = request.user
         form = forms.FilmToList()
         list_name = ListName.objects.get(id=id)
         list_films = FilmList.objects.filter(list=list_name)
-        liked = ListLike.objects.filter(list=list_name, user=request.user)
-        if list(FilmList.objects.filter(list=list_name)):
-            last_added = FilmList.objects.filter(list=list_name).order_by('-date')[0]
+        if request.user.is_authenticated:
+            logged_user = request.user.username
+            liked = ListLike.objects.filter(list=list_name, user=request.user)
+            if list(FilmList.objects.filter(list=list_name)):
+                last_added = FilmList.objects.filter(list=list_name).order_by('-date')[0]
+                return render(request, 'films/list_detail.html',
+                              {'list_films': list_films, 'list_name': list_name, 'last_update': last_added.date,
+                               'form': form, 'liked': liked, 'logged_user': logged_user})
             return render(request, 'films/list_detail.html',
-                          {'list_films': list_films, 'list_name': list_name, 'last_update': last_added.date,
-                           'form': form, 'user': user, 'liked': liked})
-        return render(request, 'films/list_detail.html',
-                      {'list_films': list_films, 'list_name': list_name, 'form': form, 'user': user, 'liked': liked})
+                          {'list_films': list_films, 'list_name': list_name, 'form': form,
+                           'liked': liked, 'logged_user': logged_user})
+        else:
+            logged_user = 'yok'
+            if list(FilmList.objects.filter(list=list_name)):
+                last_added = FilmList.objects.filter(list=list_name).order_by('-date')[0]
+                return render(request, 'films/list_detail.html',
+                              {'list_films': list_films, 'list_name': list_name, 'last_update': last_added.date,
+                               'form': form, 'logged_user': logged_user})
+            return render(request, 'films/list_detail.html',
+                          {'list_films': list_films, 'list_name': list_name, 'form': form, 'logged_user': logged_user})
 
 
 # def list_detail(request, id):
@@ -246,35 +278,63 @@ class ListDetail(View):
 #     return render(request, 'films/list_detail.html',
 #                   {'list_films': list_films, 'list_name': list_name})
 
+class CreateList(LoginRequiredMixin, View):
+    def get(self, request):
+        form = forms.CreateList()
+        return render(request, "films/create_list.html", {'form': form})
 
-def create_list(request):
-    if request.method == 'POST':
+    def post(self, request):
         form = forms.CreateList(request.POST, request.FILES)
         if form.is_valid():
             instance = form.save(commit=False)
             instance.user = request.user
             instance.save()
             return redirect('profile:profile', city='lists', username=request.user.username)
-    else:
-        form = forms.CreateList()
-    return render(request, "films/create_list.html", {'form': form})
 
 
-def film_to_list(request, id):
-    list_name = ListName.objects.get(id=id)
-    if request.method == 'POST':
+# def create_list(request):
+#     if request.method == 'POST':
+#         form = forms.CreateList(request.POST, request.FILES)
+#         if form.is_valid():
+#             instance = form.save(commit=False)
+#             instance.user = request.user
+#             instance.save()
+#             return redirect('profile:profile', city='lists', username=request.user.username)
+#     else:
+#         form = forms.CreateList()
+#     return render(request, "films/create_list.html", {'form': form})
+
+class FilmToList(LoginRequiredMixin, View):
+    def get(self, request, id):
+        list_name = ListName.objects.get(id=id)
+        form = forms.FilmToList()
+        return render(request, "films/film_to_list.html", {'form': form, 'list_name': list_name})
+
+    def post(self, request, id):
+        list_name = ListName.objects.get(id=id)
         form = forms.FilmToList(request.POST, request.FILES)
         if form.is_valid():
             instance = form.save(commit=False)
             instance.list = list_name
             instance.save()
             return redirect('profile:list detail', id=id)
-    else:
-        form = forms.FilmToList()
-    return render(request, "films/film_to_list.html", {'form': form, 'list_name': list_name})
 
 
-class LikeButtonAjax(View):
+# def film_to_list(request, id):
+#     list_name = ListName.objects.get(id=id)
+#     if request.method == 'POST':
+#         form = forms.FilmToList(request.POST, request.FILES)
+#         if form.is_valid():
+#             instance = form.save(commit=False)
+#             instance.list = list_name
+#             instance.save()
+#             return redirect('profile:list detail', id=id)
+#     else:
+#         form = forms.FilmToList()
+#     return render(request, "films/film_to_list.html", {'form': form, 'list_name': list_name})
+
+
+class LikeButtonAjax(LoginRequiredMixin, View):
     def post(self, request):
         data = {'success': True}
         film_id = request.POST['film_id']
@@ -303,7 +363,7 @@ class LikeButtonAjax(View):
 #             data['success'] = False
 #     return JsonResponse(data)
 
-class WatchlistAjax(View):
+class WatchlistAjax(LoginRequiredMixin, View):
     def post(self, request):
         data = {'success': False}
         film_id = request.POST['film_id']
@@ -324,7 +384,7 @@ class WatchlistAjax(View):
 #     return JsonResponse(data)
 
 
-class WatchLaterAjax(View):
+class WatchLaterAjax(LoginRequiredMixin, View):
     def post(self, request):
         data = {'success': True}
         film_id = request.POST['film_id']
@@ -353,7 +413,7 @@ class WatchLaterAjax(View):
 #             data['success'] = False
 #     return JsonResponse(data)
 
-class RemoveListAjax(View):
+class RemoveListAjax(LoginRequiredMixin, View):
     def post(self, request):
         data = {'success': False}
         print(request)
@@ -380,7 +440,7 @@ class RemoveListAjax(View):
     #     return JsonResponse(data)
 
 
-class DeleteListAjax(View):
+class DeleteListAjax(LoginRequiredMixin, View):
     def post(self, request):
         data = {'success': False}
         name_id = request.POST['name_id']
@@ -399,7 +459,7 @@ class DeleteListAjax(View):
 #     return JsonResponse(data)
 
 
-class WatchedAjax(View):
+class WatchedAjax(LoginRequiredMixin, View):
     def post(self, request):
         data = {'success': True}
         film_id = request.POST['film_id']
@@ -428,7 +488,7 @@ class WatchedAjax(View):
 #             data['success'] = False
 #     return JsonResponse(data)
 
-class DeleteReviewAjax(View):
+class DeleteReviewAjax(LoginRequiredMixin, View):
     def post(self, request):
         data = {'success': False}
         review_id = request.POST['review_id']
@@ -446,7 +506,7 @@ class DeleteReviewAjax(View):
 #
 #     return JsonResponse(data)
 
-class LikeReview(View):
+class LikeReview(LoginRequiredMixin, View):
     def post(self, request):
         data = {'success': True}
         review_id = request.POST['review_id']
@@ -461,7 +521,7 @@ class LikeReview(View):
         return JsonResponse(data)
 
 
-class LikeList(View):
+class LikeList(LoginRequiredMixin, View):
     def post(self, request):
         data = {'success': True}
         list_name_id = request.POST['list_name_id']
@@ -525,7 +585,7 @@ class OtherProfile(View):
                        'review_number': review_number, 'seen_film_number': seen_film_number})
 
 
-class UploadPicture(View):
+class UploadPicture(LoginRequiredMixin, View):
     def post(self, request):
         profile = Profile.objects.get(user=request.user)
         form = forms.ProfilePicture(request.POST, request.FILES, instance=profile)

@@ -92,75 +92,141 @@
         <div class="container">
             <h3 style="text-align: center">Recently Reviewed</h3> <br>
             <div class="row">
-                {% for review,liked in reviews_liked %}
-                    <div class="col-md-6">
-                        <div class="resume-item mb-4">
-                            <div class="card mb-3" style="max-width: 540px; background-color: #1d2124">
-                                <div class="row no-gutters">
-                                    {% if review.film.poster.url %}
-                                        <div class="col-md-4">
-                                            <img src="{{ review.film.poster.url }}" class="card-img" alt="...">
-                                        </div>
-                                    {% endif %}
-                                    <div class="col-md-8">
-                                        <div class="card-body">
+                {% if user.is_authenticated %}
+                    {% for review,liked in reviews_liked %}
+                        <div class="col-md-6">
+                            <div class="resume-item mb-4">
+                                <div class="card mb-3" style="max-width: 540px; background-color: #1d2124">
+                                    <div class="row no-gutters">
+                                        {% if review.film.poster.url %}
+                                            <div class="col-md-4">
+                                                <img src="{{ review.film.poster.url }}" class="card-img" alt="...">
+                                            </div>
+                                        {% endif %}
+                                        <div class="col-md-8">
+                                            <div class="card-body">
                                             <span class="date"><span
                                                     class="icon-calendar"></span> {{ review.date }}</span>
-                                            <h5 class="card-title"><a
-                                                    href="{% url 'films:detail' id=review.film.id %}"
-                                                    class="film">{{ review.film.title }}</a></h5>
-                                            <h6 class="text-muted">
-                                                {% if review.rating %}
-                                                    <i style="margin-right:5px; color: #fddb3a "
-                                                       class="fas fa-star"></i> {{ review.rating }}
-                                                {% endif %}
-                                            </h6>
-                                            <p class="card-text"><a
-                                                    href="{% url 'profile:detail' id=review.id %}">{{ review.body|truncatechars:50 }}</a>
-                                            </p>
-                                            {% if user.is_authenticated %}
-                                                <div class="like-btn-{{ review.id }}" style="display: inline">
-                                                    <a href="javascript:void();" id="review-like-{{ review.id }}"
-                                                            {% if liked %}
-                                                       style="color: #7c071b;display: inline"
-                                                            {% else %}
-                                                       style="color: #726f6f;display:inline;"
-                                                            {% endif %}
-                                                       onclick="ReviewLike({{ review.id }});"><i
-                                                            class="fas fa-heart fa-1x"></i></a>
-                                                </div>
-                                            {% endif %}
-                                            <p id="like-txt-{{ review.id }}"
-                                               style="display:inline; font-size: 14px">
-                                                {% if liked %}
-                                                    Liked
-                                                {% else %}
-                                                    Like Review
-                                                {% endif %}
-                                            </p>
-                                            <p class="card-text">
-
-                                                <small class="text-muted">reviewed
-                                                    by
-                                                    {% if user.username == review.author.username %}
-                                                        <a href="{% url 'profile:profile' city='watched' username=review.author.username %}"><i>{{ review.author.username }}</i></a>
-                                                    {% else %}
-                                                        <a href="{% url 'other_profile' username=review.author.username %}">{{ review.author.username }}</a>
+                                                <h5 class="card-title"><a
+                                                        href="{% url 'films:detail' id=review.film.id %}"
+                                                        class="film">{{ review.film.title }}</a></h5>
+                                                <h6 class="text-muted">
+                                                    {% if review.rating %}
+                                                        <i style="margin-right:5px; color: #fddb3a "
+                                                           class="fas fa-star"></i> {{ review.rating }}
                                                     {% endif %}
+                                                </h6>
+                                                <p class="card-text"><a
+                                                        href="{% url 'profile:detail' id=review.id %}">{{ review.body|truncatechars:50 }}</a>
+                                                </p>
+                                                {% if user.is_authenticated %}
+                                                    <div class="like-btn-{{ review.id }}" style="display: inline; cursor: pointer">
+                                                        <div id="review-like-{{ review.id }}"
+                                                                {% if liked %}
+                                                             style="color: #7c071b;display: inline"
+                                                                {% else %}
+                                                             style="color: #726f6f;display:inline;"
+                                                                {% endif %}
+                                                             onclick="ReviewLike({{ review.id }});"><i
+                                                                class="fas fa-heart fa-1x"></i></div>
+                                                    </div>
+                                                    <p id="like-txt-{{ review.id }}"
+                                                       style="display:inline; font-size: 14px">
+                                                        {% if liked %}
+                                                            Liked
+                                                        {% else %}
+                                                            Like Review
+                                                        {% endif %}
+                                                    </p>
+                                                {% endif %}
 
-                                                </small>
-                                                <img src="{{ review.author.profile.picture.url }}"
-                                                     style="height: 40px;width: 40px; object-fit: cover; border-radius: 100%; margin-left: 7px "
-                                                     alt="">
+                                                <p class="card-text">
 
-                                            </p>
+                                                    <small class="text-muted">reviewed
+                                                        by
+                                                        {% if user.username == review.author.username %}
+                                                            <a href="{% url 'profile:profile' city='watched' username=review.author.username %}"><i>{{ review.author.username }}</i></a>
+                                                        {% else %}
+                                                            <a href="{% url 'other_profile' username=review.author.username %}">{{ review.author.username }}</a>
+                                                        {% endif %}
+
+                                                    </small>
+                                                    <img src="{{ review.author.profile.picture.url }}"
+                                                         style="height: 40px;width: 40px; object-fit: cover; border-radius: 100%; margin-left: 7px "
+                                                         alt="">
+
+                                                </p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                {% endfor %}
+                    {% endfor %}
+                {% else %}
+                    {% for review in reviews %}
+                        <div class="col-md-6">
+                            <div class="resume-item mb-4">
+                                <div class="card mb-3" style="max-width: 540px; background-color: #1d2124">
+                                    <div class="row no-gutters">
+                                        {% if review.film.poster.url %}
+                                            <div class="col-md-4">
+                                                <img src="{{ review.film.poster.url }}" class="card-img" alt="...">
+                                            </div>
+                                        {% endif %}
+                                        <div class="col-md-8">
+                                            <div class="card-body">
+                                            <span class="date"><span
+                                                    class="icon-calendar"></span> {{ review.date }}</span>
+                                                <h5 class="card-title"><a
+                                                        href="{% url 'films:detail' id=review.film.id %}"
+                                                        class="film">{{ review.film.title }}</a></h5>
+                                                <h6 class="text-muted">
+                                                    {% if review.rating %}
+                                                        <i style="margin-right:5px; color: #fddb3a "
+                                                           class="fas fa-star"></i> {{ review.rating }}
+                                                    {% endif %}
+                                                </h6>
+                                                <p class="card-text"><a
+                                                        href="{% url 'profile:detail' id=review.id %}">{{ review.body|truncatechars:50 }}</a>
+                                                </p>
+                                                <div class="like-btn-{{ review.id }}" style="display: inline">
+                                                    <a href="{% url 'profile:like review ajax' %}"
+                                                       id="review-like-{{ review.id }}"
+                                                       style="color: #726f6f;display:inline;"
+                                                    ><i
+                                                            class="fas fa-heart fa-1x"></i></a>
+                                                </div>
+                                                <p id="like-txt-{{ review.id }}"
+                                                   style="display:inline; font-size: 14px">
+                                                    Like Review
+                                                </p>
+
+                                                <p class="card-text">
+
+                                                    <small class="text-muted">reviewed
+                                                        by
+                                                        {% if user.username == review.author.username %}
+                                                            <a href="{% url 'profile:profile' city='watched' username=review.author.username %}"><i>{{ review.author.username }}</i></a>
+                                                        {% else %}
+                                                            <a href="{% url 'other_profile' username=review.author.username %}">{{ review.author.username }}</a>
+                                                        {% endif %}
+
+                                                    </small>
+                                                    <img src="{{ review.author.profile.picture.url }}"
+                                                         style="height: 40px;width: 40px; object-fit: cover; border-radius: 100%; margin-left: 7px "
+                                                         alt="">
+
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
 
             </div>
         </div>

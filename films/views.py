@@ -4,6 +4,7 @@ from my_profile.models import Review, SeenFilm, Watch, ReviewLike
 from films.models import FilmList, ListName
 from django.views import View
 from my_profile import forms
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 # Create your views here.
@@ -109,13 +110,17 @@ class AllLists(View):
     def get(self, request):
         list_names = ListName.objects.all().order_by('-date')
         list_films = []
-
-        for name in list_names:
-
-            if list(FilmList.objects.filter(list=name)):
-                last_added = FilmList.objects.filter(list=name).order_by('-date')[0]
-                list_films.append((list(FilmList.objects.filter(list=name)[:3]), name, last_added.date,
-                                   list(ListLike.objects.filter(list=name, user=request.user))))
+        if request.user.is_authenticated:
+            for name in list_names:
+                if list(FilmList.objects.filter(list=name)):
+                    last_added = FilmList.objects.filter(list=name).order_by('-date')[0]
+                    list_films.append((list(FilmList.objects.filter(list=name)[:3]), name, last_added.date,
+                                       list(ListLike.objects.filter(list=name, user=request.user))))
+        else:
+            for name in list_names:
+                if list(FilmList.objects.filter(list=name)):
+                    last_added = FilmList.objects.filter(list=name).order_by('-date')[0]
+                    list_films.append((list(FilmList.objects.filter(list=name)[:3]), name, last_added.date))
         return render(request, 'films/all_lists.html', {'list_films': list_films})
 
 # def all_lists(request):

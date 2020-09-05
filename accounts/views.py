@@ -5,11 +5,12 @@ from django.contrib.auth import login, logout
 
 def login_view(request):
     form = AuthenticationForm(data=request.POST)
+    signup_form = UserCreationForm()
     if form.is_valid():
         user = form.get_user()
         login(request, user)
         return redirect('home')
-    return render(request, 'accounts/login.html', {'form': form})
+    return render(request, 'accounts/login.html', {'form': form, 'signup_form': signup_form})
 
 
 def signup_view(request):

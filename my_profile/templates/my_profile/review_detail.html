@@ -38,36 +38,39 @@
 
                 <p style="margin-left: 50px;margin-top: 10px" class="text-muted"> reviewed {{ review.date }}</p>
                 <p style="margin-left: 50px">{{ review.body }}</p>
-                <p style="margin-left: 50px">
-                    {% if user.is_authenticated %}
-                        <div class="like-btn" style="display: inline;margin-left: 50px">
-                            <a href="#" id="review-like"
-                                    {% if liked %}
-                               style="color: #7c071b;display: inline"
-                                    {% else %}
-                               style="color: #726f6f;display:inline;"
-                                    {% endif %}
-                               onclick="ReviewLike({{ review.id }});"><i
-                                    class="fas fa-heart fa-2x"></i></a>
-                        </div>
-                    {% endif %}
-                {% if user == review.author %}
-                    <a href="#" style="margin-left: 10px"
-                       onclick="DeleteReview({{ review.id }});"><i
-                            class="fas fa-trash-alt fa-2x"></i></a>
-                    <a style="margin-left: 10px; display: inline" href="#"
-                       onclick="EditReview();"><i class="fas fa-edit fa-2x"></i></a>
-                    <form id="edit-review-form" style="display: none; margin-left: 50px" class="add-review-form"
-                          action="{% url 'profile:edit review' id=review.id %}" method="post"
-                          enctype="multipart/form-data">
-                        {% csrf_token %}
-                        {{ form|crispy }}
-                        <input onclick="Submitted()" type="submit" class="btn-outline-primary"
-                               value="Edit Review">
 
-                    </form>
+                {% if user.is_authenticated %}
+                    <div class="like-btn" style="display: inline;margin-left: 50px">
+                        <div id="review-like"
+                                {% if liked %}
+                             style="color: #7c071b;display: inline;cursor: pointer"
+                                {% else %}
+                             style="color: #726f6f;display:inline; cursor: pointer"
+                                {% endif %}
+                             onclick="ReviewLike({{ review.id }});"><i
+                                class="fas fa-heart fa-2x"></i></div>
+                    </div>
+                    {% if user == review.author %}
+                        <div style="margin-left: 10px; cursor: pointer; display: inline"
+                             onclick="DeleteReview({{ review.id }});"><i
+                                class="fas fa-trash-alt fa-2x"></i></div>
+                        <div style="margin-left: 10px; display: inline; cursor: pointer"
+                             onclick="EditReview();"><i class="fas fa-edit fa-2x"></i></div>
+                        <form id="edit-review-form" style="display: none; margin-left: 50px" class="add-review-form"
+                              action="{% url 'profile:edit review' id=review.id %}" method="post"
+                              enctype="multipart/form-data">
+                            {% csrf_token %}
+                            {{ form|crispy }}
+                            <input onclick="Submitted()" type="submit" class="btn-outline-primary"
+                                   value="Edit Review">
+
+                        </form>
+                    {% endif %}
+                {% else %}
+                    <a href="{% url 'profile:like review ajax' %}" style="color: #726f6f; margin-left: 50px"><i
+                            class=" fas fa-heart fa-2x"></i></a>
+
                 {% endif %}
-                </p>
 
 
             </div>
