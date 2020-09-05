@@ -35,60 +35,23 @@
             <!--First slide-->
             <div class="carousel-item active">
 
-                <div class="col-md-3" style="float:left">
-                    <div class="card mb-2">
-                        <img class="card-img-top"
-                             src="{{ film.poster.url }}" alt="Card image cap">
-                        <div class="card-body" style="background-color: #0b0b0b">
-                            <h4 class="card-title"><a href="{% url 'films:detail' id=film.id %}"
-                                                      class="film">{{ film.title }}</a></h4>
-                            <p class="card-text">{{ film.body }}</p>
+                {% for slide_film in first_slide %}
+                    <div class="col-md-3" style="float:left; background-color: #0b0b0b">
+                        <div class="card mb-2" style="background-color: #0b0b0b ">
+                            <a href="{% url 'films:detail' id=slide_film.id %}"
+                               class="film">
+                                <img class="card-img-top"
+                                     style="max-height: 550px; width: auto;  margin-top: 50px"
+                                     src="{{ slide_film.poster.url }}" alt="Card image cap">
+                            </a>
+
+                            <div class="card-body" style="background-color: #0b0b0b">
+
+
+                            </div>
                         </div>
                     </div>
-                </div>
-
-                <div class="col-md-3" style="float:left">
-                    <div class="card mb-2">
-                        <img class="card-img-top"
-                             src="{{ film2.poster.url }}"
-                             alt="Card image cap">
-                        <div class="card-body" style="background-color: #0b0b0b">
-                            <h4 class="card-title"><a href="{% url 'films:detail' id=film2.id %}"
-                                                      class="film">{{ film2.title }}</a></h4>
-                            <p class="card-text">{{ film2.body }}</p>
-
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-3" style="float:left">
-                    <div class="card mb-2">
-                        <img class="card-img-top"
-                             src="https://mdbootstrap.com/img/Photos/Horizontal/City/4-col/img%20(60).jpg"
-                             alt="Card image cap">
-                        <div class="card-body">
-                            <h4 class="card-title">Card title</h4>
-                            <p class="card-text">Some quick example text to build on the card title and make up the bulk
-                                of the
-                                card's content.</p>
-
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-3" style="float:left">
-                    <div class="card mb-2">
-                        <img class="card-img-top"
-                             src="https://mdbootstrap.com/img/Photos/Horizontal/City/4-col/img%20(60).jpg"
-                             alt="Card image cap">
-                        <div class="card-body">
-                            <h4 class="card-title">Card title</h4>
-                            <p class="card-text">Some quick example text to build on the card title and make up the bulk
-                                of the
-                                card's content.</p>
-                        </div>
-                    </div>
-                </div>
+                {% endfor %}
 
             </div>
             <!--/.First slide-->
@@ -96,66 +59,24 @@
             <!--Second slide-->
             <div class="carousel-item">
 
-                <div class="col-md-3" style="float:left">
-                    <div class="card mb-2">
-                        <img class="card-img-top"
-                             src="https://mdbootstrap.com/img/Photos/Horizontal/City/4-col/img%20(60).jpg"
-                             alt="Card image cap">
-                        <div class="card-body">
-                            <h4 class="card-title">Card title</h4>
-                            <p class="card-text">Some quick example text to build on the card title and make up the bulk
-                                of the
-                                card's content.</p>
+                {% for slide_film2 in second_slide %}
+                    <div class="col-md-3" style="float:left; background-color: #0b0b0b">
+                        <div class="card mb-2" style="background-color: #0b0b0b">
+                            <a href="{% url 'films:detail' id=slide_film2.id %}"
+                               class="film">
+                                <img class="card-img-top"
+                                     style="max-height: 550px; width: auto; margin-top: 50px"
+                                     src="{{ slide_film2.poster.url }}" alt="Card image cap">
+                            </a>
 
+                            <div class="card-body" style="background-color: #0b0b0b">
+
+
+                            </div>
                         </div>
                     </div>
-                </div>
+                {% endfor %}
 
-                <div class="col-md-3" style="float:left">
-                    <div class="card mb-2">
-                        <img class="card-img-top"
-                             src="https://mdbootstrap.com/img/Photos/Horizontal/City/4-col/img%20(47).jpg"
-                             alt="Card image cap">
-                        <div class="card-body">
-                            <h4 class="card-title">Card title</h4>
-                            <p class="card-text">Some quick example text to build on the card title and make up the bulk
-                                of the
-                                card's content.</p>
-
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-3" style="float:left">
-                    <div class="card mb-2">
-                        <img class="card-img-top"
-                             src="https://mdbootstrap.com/img/Photos/Horizontal/City/4-col/img%20(48).jpg"
-                             alt="Card image cap">
-                        <div class="card-body">
-                            <h4 class="card-title">Card title</h4>
-                            <p class="card-text">Some quick example text to build on the card title and make up the bulk
-                                of the
-                                card's content.</p>
-
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-3" style="float:left">
-                    <div class="card mb-2">
-                        <img class="card-img-top"
-                             src="https://mdbootstrap.com/img/Photos/Horizontal/City/4-col/img%20(47).jpg"
-                             alt="Card image cap">
-                        <div class="card-body">
-                            <h4 class="card-title">Card title</h4>
-
-                            <p class="card-text">Some quick example text to build on the card title and make up the bulk
-                                of the
-                                card's content.</p>
-
-                        </div>
-                    </div>
-                </div>
 
             </div>
             <!--/.Second slide-->
@@ -220,9 +141,16 @@
                                             <p class="card-text">
 
                                                 <small class="text-muted">reviewed
-                                                    by {{ review.author }} </small>
+                                                    by
+                                                    {% if user.username == review.author.username %}
+                                                        <a href="{% url 'profile:profile' city='watched' username=review.author.username %}"><i>{{ review.author.username }}</i></a>
+                                                    {% else %}
+                                                        <a href="{% url 'other_profile' username=review.author.username %}">{{ review.author.username }}</a>
+                                                    {% endif %}
+
+                                                </small>
                                                 <img src="{{ review.author.profile.picture.url }}"
-                                                     style="width: 10%; border-radius: 100%; margin-left: 7px"
+                                                     style="height: 40px;width: 40px; object-fit: cover; border-radius: 100%; margin-left: 7px "
                                                      alt="">
 
                                             </p>
@@ -282,9 +210,16 @@
                 <div class="col-md-4">
                     <p style="margin-top: -5px"><a
                             href="{% url 'profile:list detail' id=name.id %}">{{ name.list_name }}</a></p>
-                    <p style="margin-top: -7px">{{ name.user.username }} <img src="{{ name.user.profile.picture.url }}"
-                                                                              style="width:8%; border-radius: 100%; margin-left: 5px"
-                                                                              alt="">
+                    <p style="margin-top: -7px">
+                        {% if user.username == name.user.username %}
+                            <a href="{% url 'profile:profile' city='watched' username=name.user.username %}"><i>{{ name.user.username }}</i></a>
+                        {% else %}
+                            <a href="{% url 'other_profile' username=name.user.username %}">{{ name.user.username }}</a>
+                        {% endif %}
+
+                        <img src="{{ name.user.profile.picture.url }}"
+                             style="height: 30px;width: 30px; object-fit: cover; border-radius: 100%; margin-left: 5px"
+                             alt="">
                     </p>
                 </div>
             {% endfor %}

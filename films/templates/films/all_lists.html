@@ -35,9 +35,17 @@
                                 <a href="{% url 'profile:list detail' id=name.id %}"><p
                                         style="margin-left: 20px">{{ name.body }}</p></a>
 
-                                <p style="margin-left: 20px">created by <i>{{ name.user.username }}</i> <img
-                                        src="{{ name.user.profile.picture.url }}"
-                                        style="width: 5%;border-radius: 100%; margin-left: 5px" alt="">
+                                <p style="margin-left: 20px">created by
+                                    {% if user.username == name.user.username %}
+                                        <a href="{% url 'profile:profile' city='watched' username=name.user.username %}"><i>{{ name.user.username }}</i></a>
+                                    {% else %}
+                                        <a href="{% url 'other_profile' username=name.user.username %}"><i>{{ name.user.username }}</i></a>
+                                    {% endif %}
+
+                                    <img
+                                            src="{{ name.user.profile.picture.url }}"
+                                            style="height: 35px;width: 35px; object-fit: cover;border-radius: 100%; margin-left: 5px"
+                                            alt="">
                                 </p>
 
                                 <p style="margin-left: 20px">

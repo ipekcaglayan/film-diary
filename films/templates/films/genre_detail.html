@@ -30,7 +30,7 @@
                                 <h3 class="card-title"><a
                                         href="{% url 'films:detail' id=film.id %}">{{ film.title }}</a>
                                 </h3>
-                                <p class="card-text"><a style="color: #646464" href="{% url 'films:detail' id=film.id %}">{{ film.body }}</a>
+                                <p class="card-text"><a style="color: #646464" href="{% url 'films:detail' id=film.id %}">{{ film.body|truncatechars:200 }}</a>
                                 </p>
                             </div>
                         </div>

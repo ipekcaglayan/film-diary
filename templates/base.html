@@ -39,19 +39,19 @@
                     <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
                     {% if user.is_authenticated %}
                         <li class="nav-item active dropdown" style="padding-right: 20px;">
-                            <a class="nav-link dropdown-toggle" href="{% url 'profile:profile' city='wacthed' %}"
+                            <a class="nav-link dropdown-toggle" href="{% url 'profile:profile' city='wacthed' username=user.username %}"
                                id="navbarDropdownMenuLink"
                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 {{ user.username }}
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                                 <a class="dropdown-item"
-                                   href="{% url 'profile:profile' city='watched' %}">My
+                                   href="{% url 'profile:profile' city='watched' username=user.username  %}">My
                                     Profile</a>
-                                <a class="dropdown-item" href="{% url 'profile:profile' city='reviews' %}">Reviews</a>
+                                <a class="dropdown-item" href="{% url 'profile:profile' city='reviews' username=user.username  %}">Reviews</a>
                                 <a class="dropdown-item"
-                                   href="{% url 'profile:profile' city='watchlist' %}">Watchlist</a>
-                                <a class="dropdown-item" href="{% url 'profile:profile' city='lists' %}">Lists</a>
+                                   href="{% url 'profile:profile' city='watchlist' username=user.username  %}">Watchlist</a>
+                                <a class="dropdown-item" href="{% url 'profile:profile' city='lists' username=user.username  %}">Lists</a>
                                 <a class="dropdown-item" href="{% url 'accounts:logout' %}">Log Out</a>
                             </div>
                         </li>

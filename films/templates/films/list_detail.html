@@ -143,7 +143,7 @@
                             success: function (data) {
                                 if (data['success']) {
 
-                                    window.location.href = '{% url 'profile:profile' city='lists' %}'
+                                    window.location.href = '{% url 'profile:profile' city='lists' username=user.username %}'
 
 
                                 }

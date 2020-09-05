@@ -7,8 +7,8 @@ from django.views import View
 
 class Homepage(View):
     def get(self, request):
-        film = Film.objects.get(id=30)
-        film2 = Film.objects.get(id=31)
+        first_slide = Film.objects.all()[:4]
+        second_slide = Film.objects.all()[4:8]
         reviews = Review.objects.all().order_by('-date')[:6]
         reviews_liked = []
         dictionary = SeenFilm.objects.values("film_id").annotate(count=Count('film')).order_by("-count")
@@ -26,5 +26,6 @@ class Homepage(View):
             reviews_liked.append((r, liked))
 
         return render(request, 'homepage/homepage.html',
-                      {'film': film, 'film2': film2, 'reviews': reviews, 'popular_films': popular_films,
+                      {'first_slide': first_slide, 'second_slide': second_slide, 'reviews': reviews,
+                       'popular_films': popular_films,
                        'list_films': list_films, 'list_names': list_names, 'reviews_liked': reviews_liked})

@@ -14,9 +14,15 @@
                                                                           src="{{ review.film.poster.url }}" alt=""></a>
             </div>
             <div class="col-md-8" style="display: inline">
-                <p style="margin-left: 50px" class="text-muted"> reviewed by {{ review.author }} <img
-                        style="width: 5%; border-radius: 100%; margin-left: 10px"
-                        src="{{ review.author.profile.picture.url }}" alt="">
+                <p style="margin-left: 50px" class="text-muted"> reviewed by
+                    {% if user.username == review.author.username %}
+                        <a href="{% url 'profile:profile' city='watched' username=review.author.username %}"><i>{{ review.author.username }}</i></a>
+                    {% else %}
+                        <a href="{% url 'other_profile' username=review.author.username %}">{{ review.author.username }}</a>
+                    {% endif %}
+                    <img
+                            style="width: 5%; border-radius: 100%; margin-left: 10px"
+                            src="{{ review.author.profile.picture.url }}" alt="">
 
                 </p>
                 <hr align="left" style="border: 1px solid #3f3f3f; width: 100%; margin-left: 50px ">
