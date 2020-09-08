@@ -65,41 +65,42 @@
                 </form>
             {% endif %}
         {% endif %}
-        <div class="row">
+        <div class="row" style="margin-bottom: 200px">
 
             {% for list in list_films %}
 
 
                 <div id="movie-card-{{ list.film.id }}" class="col-md-3" style="margin-bottom: 20px">
-                    <a href="{% url 'films:detail' id=list.film.id %}">
-                        <div class="card card-flip h-100" style="border: #00CCFF; background-color: #0b0b0b">
-                            <div class="card-front " style="background-color: #0b0b0b">
-                                <div class="card-body">
-                                    <img src="{{ list.film.poster.url }}" alt="" style="max-width: 210px">
-                                </div>
-                            </div>
-                            <div class="card-back" style="background-color: #0b0b0b">
-                                <div class="card-body" style="background-color: #0b0b0b">
-                                    <h3 class="card-title">{{ list.film.title }} </h3>
-                                    <p class="card-text">{{ list.film.body|truncatechars:150 }}</p>
-                                    {% if user.is_authenticated %}
-                                        {% if user.username == list_name.user.username %}
-                                            <form id="form-watch-{{ list.film.id }}" method='post'
-                                                  style="padding-left: 40px;">{% csrf_token %}
-                                                <div
-                                                        style="background-color: transparent; border: transparent; margin-left: 25px; "
-                                                        onclick="RemoveList({{ list.film.id }})">
-                                                    <i class="fas fa-ban fa-3x"></i>
-                                                </div>
-                                                <p class="text-muted" style="margin-left: 26px; margin-top: -5px">
-                                                    Remove</p>
-                                            </form>
-                                        {% endif %}
-                                    {% endif %}
-                                </div>
+                    <div class="card card-flip h-100" style="border: #00CCFF; background-color: #0b0b0b">
+                        <div class="card-front " style="background-color: #0b0b0b">
+                            <div class="card-body">
+                                <img src="{{ list.film.poster.url }}" alt="" style="max-width: 210px">
                             </div>
                         </div>
-                    </a>
+                        <div class="card-back" style="background-color: #0b0b0b">
+                            <div class="card-body" style="background-color: #0b0b0b">
+                                <a href="{% url 'films:detail' id=list.film.id %}"><h3
+                                        class="card-title">{{ list.film.title }} </h3></a>
+                                <p class="card-text"><a
+                                        href="{% url 'films:detail' id=list.film.id %}">{{ list.film.body|truncatechars:100 }}</a>
+                                </p>
+                                {% if user.is_authenticated %}
+                                    {% if user.username == list_name.user.username %}
+                                        <form id="form-watch-{{ list.film.id }}" method='post'
+                                              style="padding-left: 40px;">{% csrf_token %}
+                                            <div
+                                                    style="background-color: transparent; border: transparent;cursor: pointer; position: absolute; bottom: 50px; left: 100px "
+                                                    onclick="RemoveList({{ list.film.id }})">
+                                                <i class="fas fa-ban fa-3x"></i>
+                                            </div>
+                                            <p class="text-muted" style="position: absolute; bottom: 5px; left: 95px">
+                                                Remove</p>
+                                        </form>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
 

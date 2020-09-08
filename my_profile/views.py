@@ -13,6 +13,8 @@ import numpy as np
 import sklearn
 from sklearn.decomposition import TruncatedSVD
 import MySQLdb
+from sklearn.metrics.pairwise import linear_kernel
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 
 # list_names = ListName.objects.all().order_by('-date')
@@ -650,3 +652,29 @@ class RecommendMovie(LoginRequiredMixin, View):
             if not list(SeenFilm.objects.filter(user=request.user, film=film)):
                 recommended_movies.append(film)
         return render(request, "my_profile/recommend_movie.html", {'recommended_movies': recommended_movies})
+
+
+class ContentBasedRecommender(View):
+    def get(self, request, id):
+        db = MySQLdb.connect(host='127.0.0.1', user='root', passwd='11223344', db='mydatabase')
+        movie_list = pd.read_sql_query('select id as film_id, title, body from films_film', db)
+        tfidf = TfidfVectorizer(stop_words='english')
+        movie_list['body'] = movie_list['body'].fillna('')
+        tfidf_matrix = tfidf.fit_transform(movie_list['body'])
+        cosine_sim = linear_kernel(tfidf_matrix, tfidf_matrix)
+        indices = pd.Series(movie_list.index, index=movie_list['title']).drop_duplicates()
+        print(indices)
+        movie = Film.objects.get(id=id)
+        similar_to = movie
+        movie_index = indices[movie.title]
+        sim_scores = list(enumerate(cosine_sim[movie_index]))
+        sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
+        sim_scores = sim_scores[1:6]
+        movie_indices = [i[0] for i in sim_scores]
+        recommended_films = []
+        films = movie_list['title'].iloc[movie_indices]
+        film_likes = FilmLike.objects.filter(film=movie)
+        for film in films:
+            recommended_films.append(Film.objects.get(title=film))
+        return render(request, "my_profile/content_based_recommender.html",
+                      {'recommended_films': recommended_films, 'similar_to': similar_to, 'film_likes':film_likes})

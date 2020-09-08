@@ -3,14 +3,17 @@ from .models import Film, Genre, FilmLike, ListLike
 from my_profile.models import Review, SeenFilm, Watch, ReviewLike
 from films.models import FilmList, ListName
 from django.views import View
+from django.views.generic import ListView
 from my_profile import forms
 from django.db.models import Count, Avg
+from django.core.paginator import Paginator
 
 
-class Movies(View):
-    def get(self, request):
-        films = Film.objects.all().order_by('title')
-        return render(request, 'films/movies.html', {'films': films})
+class Movies(ListView):
+    model = Film
+    template_name = 'films/movies.html'
+    context_object_name = 'films'
+    paginate_by = 20
 
 
 class Search(View):
