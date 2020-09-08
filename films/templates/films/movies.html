@@ -30,7 +30,7 @@
                                 <div class="card-back" style="background-color: #0b0b0b">
                                     <div class="card-body" style="background-color: #0b0b0b">
                                         <h3 class="card-title">{{ film.title }}</h3>
-                                        <p class="card-text">{{ film.body }}</p>
+                                        <p class="card-text">{{ film.body|truncatechars:200 }}</p>
                                     </div>
                                 </div>
                             </div>

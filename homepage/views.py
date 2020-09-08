@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from films.models import Film, ListName, FilmList
+from films.models import Film, ListName, FilmList, FilmLike
 from my_profile.models import Review, SeenFilm, ReviewLike
 from django.db.models import Count
 from django.views import View
@@ -11,7 +11,7 @@ class Homepage(View):
         second_slide = Film.objects.all()[4:8]
         reviews = Review.objects.all().order_by('-date')[:6]
         reviews_liked = []
-        dictionary = SeenFilm.objects.values("film_id").annotate(count=Count('film')).order_by("-count")[:6]
+        dictionary = FilmLike.objects.values("film_id").annotate(count=Count('film')).order_by("-count")[:6]
         popular_films = []
         for ele in dictionary:
             film = Film.objects.get(id=ele['film_id'])

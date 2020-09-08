@@ -4,26 +4,50 @@ from my_profile.models import Review, SeenFilm, Watch, ReviewLike
 from films.models import FilmList, ListName
 from django.views import View
 from my_profile import forms
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Count, Avg
 
 
-# Create your views here.
-
-
-def movies(request):
-    keyword = request.GET.get("keyword")
-    if keyword:
-        films = Film.objects.filter(title__icontains=keyword)
+class Movies(View):
+    def get(self, request):
+        films = Film.objects.all().order_by('title')
         return render(request, 'films/movies.html', {'films': films})
-    films = Film.objects.all().order_by('title')
-    return render(request, 'films/movies.html', {'films': films})
+
+
+class Search(View):
+    def post(self, request):
+        keyword = request.POST.get("keyword")
+        films = Film.objects.filter(title__icontains=keyword)
+        reviews = Review.objects.filter(film__title__icontains=keyword)
+        film_list_objects = FilmList.objects.filter(film__title__icontains=keyword)
+        list_names = []
+        for film_list in film_list_objects:
+            list_names.append(ListName.objects.get(id=film_list.list_id))
+        list_films = []
+        for name in list_names:
+            list_films.append((name, list(FilmList.objects.filter(list=name)[:3])))
+        return render(request, 'films/search.html', {'films': films, 'reviews': reviews, 'list_films': list_films})
+
+
+# def movies(request):
+#     keyword = request.GET.get("results")
+#     if keyword:
+#         films = Film.objects.filter(title__icontains=keyword)
+#         return render(request, 'films/movies.html', {'films': films})
+#     films = Film.objects.all().order_by('title')
+#     return render(request, 'films/movies.html', {'films': films})
 
 
 class FilmDetail(View):
     def get(self, request, id):
-
         detailed_film = Film.objects.get(id=id)
         genres = detailed_film.genres.all()
+        avg_rating = Review.objects.filter(film=detailed_film).aggregate(avg=Avg('rating'))['avg']
+        rating_num = 0
+        if Review.objects.filter(film=detailed_film).values('film_id').annotate(rating_num=Count('rating')):
+            rating_num = \
+                Review.objects.filter(film=detailed_film).values('film_id').annotate(rating_num=Count('rating'))[0][
+                    'rating_num']
+
         film_reviews = Review.objects.filter(film__title=detailed_film.title)
         reviews_with_likes = []
         if request.user.is_authenticated:
@@ -38,13 +62,15 @@ class FilmDetail(View):
                 for r in film_reviews:
                     liked = list(ReviewLike.objects.filter(review=r, user=request.user))
                     reviews_with_likes.append((r, liked))
+            like_number = len(FilmLike.objects.filter(film_id=id))
             liked = list(FilmLike.objects.filter(film=detailed_film, user=request.user))
             added = list(SeenFilm.objects.filter(film=detailed_film, user=request.user))
             return render(request, 'films/film_detail.html',
                           {'detailed_film': detailed_film, 'genres': genres, 'film_reviews': film_reviews,
                            'added': added, 'reviewed': reviewed, 'review': review,
                            'liked': liked, 'added_watchlist': added_watchlist, 'form': form,
-                           'reviews_with_likes': reviews_with_likes})
+                           'reviews_with_likes': reviews_with_likes, 'like_number': like_number,
+                           'avg_rating': str(avg_rating)[:4], 'rating_num': rating_num})
 
         else:
             return render(request, 'films/film_detail.html',
@@ -72,15 +98,19 @@ class FilmDetail(View):
 #     else:
 #         return render(request, 'films/film_detail.html',
 #                       {'detailed_film': detailed_film, 'genres': genres, 'film_reviews': film_reviews})
-
-
-def genres(request):
-    keyword = request.GET.get("keyword")
-    if keyword:
-        all_genres = Genre.objects.filter(name__icontains=keyword)
+class Genres(View):
+    def get(self, request):
+        all_genres = Genre.objects.all().order_by('name')
         return render(request, 'films/genres.html', {'genres': all_genres})
-    all_genres = Genre.objects.all().order_by('name')
-    return render(request, 'films/genres.html', {'genres': all_genres})
+
+
+# def genres(request):
+#     keyword = request.GET.get("keyword")
+#     if keyword:
+#         all_genres = Genre.objects.filter(name__icontains=keyword)
+#         return render(request, 'films/genres.html', {'genres': all_genres})
+#     all_genres = Genre.objects.all().order_by('name')
+#     return render(request, 'films/genres.html', {'genres': all_genres})
 
 
 class GenreDetail(View):

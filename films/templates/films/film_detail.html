@@ -7,6 +7,7 @@
     <title>{{ detailed_film.title }}</title>
     <link href="https://fonts.googleapis.com/css2?family=Neuton:wght@300&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@700&display=swap" rel="stylesheet">
 {% endblock %}
 
 {% block body %}
@@ -16,49 +17,68 @@
                 <img src="{{ detailed_film.poster.url }}" style="max-width: 360px" alt="">
             </div>
             <div class=" col-md-6" style="margin-left: 130px">
-                <p>{{ detailed_film.title }}</p>
+                <p style="display: inline; font-size: 30px">{{ detailed_film.title }}  </p>
+                <p style="display: inline; margin-left: 25px"> {% if rating_num %}
+                    <i style="margin-right:10px; color: #fddb3a; font-size: 22px" class="fas fa-star"></i>
+                    <strong style="font-size: 22px">{{ avg_rating }}</strong> /10  ({{ rating_num }})
+                {% endif %}</p>
+                <br> <br>
                 <p>{{ detailed_film.body }}</p>
+                <br>
                 <div class="inline-genres">
                     {% for genre in genres %}
                         <a class="btn-sm mr-2 btn-secondary"
                            href="{% url 'genre_detail' id=genre.id %}"> {{ genre.name }}</a>
                     {% endfor %}
                 </div>
-                <br> <br>
+                <br>
+
+
                 <div class="inline-buttons">
                     {% if user.is_authenticated %}
                         <div class="watched-btn" style="display: inline">
                             <a
                                     {% if reviewed %}
                                         href="{% url 'profile:detail' id=review.id %}"
-                                        style="margin-right: 25px; color: #0c8212"
+                                        style=" color: #0c8212"
                                     {% else %}
 
                                         {% if added %}
                                         id="watched-eye"
                                         href="#"
-                                        style="margin-right: 25px; color: #0c8212"
+                                        style=" color: #0c8212"
                                         onclick="Watched({{ detailed_film.id }});"
                                         {% else %}
                                         href="#"
                                         id="watched-eye"
-                                        style="margin-right: 25px; color: #726f6f "
+                                        style=" color: #726f6f "
                                         onclick="Watched({{ detailed_film.id }});"
                                         {% endif %}
                                     {% endif %}
 
 
-                            ><i class="fas fa-eye fa-3x"></i></a>
+                            >
+                                <div style="margin-right: 5px" class="fa-stack fa-2x"><i class="fas fa-eye fa-2x"></i>
+                                </div>
+                            </a>
 
                         </div>
                         <div class="like-btn" style="display: inline">
                             <a href="#" id="like"
                                     {% if liked %}
-                               style="margin-right: 25px; color: #7c071b"
+                               style="margin-right: 5px; color: #7c071b"
                                     {% else %}
-                               style="margin-right: 25px; color: #726f6f"
+                               style="margin-right: 10px; color: #726f6f"
                                     {% endif %}
-                               onclick="Like({{ detailed_film.id }});"><i class="fas fa-heart fa-3x"></i></a>
+                               onclick="Like({{ detailed_film.id }}, {{ like_number }});">
+                                <div class="fa-stack fa-2x" style="margin-right: 10px">
+                                    <i class="fa fa-heart fa-stack-2x"></i>
+                                    <div id="like-number" style="font-family: 'Libre Baskerville', serif;"
+                                         class="fa-stack-1x text-body">
+                                        {{ like_number }}</div>
+                                </div>
+                            </a>
+
                         </div>
                         <div class="watchlist-btn" style="display: inline">
 
@@ -68,8 +88,12 @@
                                     {% else %}
                                style="color: #726f6f"
                                     {% endif %}
-                               onclick="WatchLater({{ detailed_film.id }});"><i
-                                    class="fas fa-plus fa-3x"></i></a>
+                               onclick="WatchLater({{ detailed_film.id }});">
+                                <div class="fa-stack fa-2x">
+                                    <i
+                                            class="fas fa-plus fa-2x"></i>
+                                </div>
+                            </a>
 
 
                         </div>
@@ -80,17 +104,27 @@
                                     Reviewed</h6>
                             {% else %}
                                 {% if added %}
-                                    <h6 class="text-muted" id="watched-text" style="display: inline">Watched</h6>
+                                    <h6 class="text-muted" id="watched-text"
+                                        style="display: inline; margin-right: 20px; margin-left: 7px">Watched</h6>
                                 {% else %}
                                     <h6 class="text-muted" id="watched-text"
-                                        style="display: inline; font-size: 15px; margin-right: 20px; margin-left: 5px">
+                                        style="display: inline; font-size: 15px; margin-right: 35px; margin-left: 15px">
                                         Watch</h6>
                                 {% endif %}
                             {% endif %}
 
-                        <h6 id="like-text"
-                            style="display: inline; font-size: 15px; margin-right: 20px; margin-left: 14px">Like</h6>
-                        <h6 style="display: inline; font-size: 15px; margin-right: 20px; margin-left: 5px ">
+
+                        {% if liked %}
+                            <h6 id="like-text"
+                                style="display: inline; font-size: 15px; margin-right: 20px; margin-left: 16px">
+                                Liked</h6>
+                        {% else %}
+                            <h6 id="like-text"
+                                style="display: inline; font-size: 15px; margin-right: 20px; margin-left: 16px">
+                                Like</h6>
+                        {% endif %}
+
+                        <h6 style="display: inline; font-size: 15px; margin-left: 16px ">
                             Watchlist</h6>
                         </p>
 
@@ -123,29 +157,31 @@
 
 
                     {% else %}
-                        <div class="watched-btn" style="display: inline">
-                            <a
-                                    href="javascript:void();"
-                                    id="watched-eye"
-                                    style="margin-right: 25px; color: #726f6f "
-                                    onclick="Watched({{ detailed_film.id }});"
+
+                        <a
+                                id="watched-eye"
+                                href="{% url 'profile:watchedAjax' %}"
+                                style="margin-right: 25px; color: #726f6f; display: inline"
 
 
-                            ><i class="fas fa-eye fa-3x"></i></a>
+                        ><i class="fas fa-eye fa-3x"></i></a>
 
-                        </div>
-                        <div class="like-btn" style="display: inline">
-                            <a href="javascript:void();" id="like"
-                               style="margin-right: 25px; color: #726f6f"
-                               onclick="Like({{ detailed_film.id }});"><i class="fas fa-heart fa-3x"></i></a>
-                        </div>
-                        <div class="watchlist-btn" style="display: inline">
 
-                            <a href="javascript:void();" id="watchlist"
-                               style="color: #726f6f"
-                               onclick="WatchLater({{ detailed_film.id }});"><i
-                                    class="fas fa-plus fa-3x"></i></a>
-                        </div>
+
+                        <a id="like"
+                           href="{% url 'profile:likeAjax' %}"
+                           style="margin-right: 25px; color: #726f6f; display: inline"
+                        ><i class="fas fa-heart fa-3x"></i></a>
+
+
+                        <a id="watchlist"
+                           style="color: #726f6f; display: inline"
+                           href="{% url 'profile:watchLaterAjax' %}"
+                        ><i
+                                class="fas fa-plus fa-3x"></i></a>
+
+
+
 
                         <p>
 
@@ -173,6 +209,9 @@
 
                     {% endif %}
                 </div>
+                {% if rating_num >= 6 %}
+                    <a href="{% url 'profile:recommend' id=detailed_film.id %}"> Recommended Movies</a>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -209,6 +248,7 @@
                                             href="{% url 'profile:detail' id=review.id %}">{{ review.body|truncatechars:200 }}</a>
                                     </p>
                                     <p class="card-text"><small class="text-muted">
+
                                         {% if user.is_authenticated %}
                                             <div class="like-btn" style="display: inline; margin-right: 10px">
                                                 <a href="javascript:void();" id="review-like-{{ review.id }}"
@@ -220,6 +260,7 @@
                                                    onclick="ReviewLike({{ review.id }});"><i
                                                         class="fas fa-heart fa-2x"></i></a>
                                             </div>
+
                                         {% endif %}
                                         {% if user == review.author %}
                                             <a style="margin-right: 10px" href="javascript:void();"
@@ -232,7 +273,7 @@
                                         {% else %}
                                             <a href="{% url 'other_profile' username=review.author.username %}">{{ review.author }}</a>
                                         {% endif %}
-                                          </small>
+                                    </small>
                                         <img src="{{ review.author.profile.picture.url }}"
                                              style="width: 8%; border-radius: 100%; margin-left: 7px" alt="">
                                     </p>
@@ -355,25 +396,30 @@
         }
 
 
-        function Like(film_id) {
+        function Like(film_id, like_number) {
             console.log("ipek");
             $.ajax({
                 type: "POST",
                 url: "{% url 'profile:likeAjax' %}",
                 data: {
                     film_id: film_id,
+                    like_number: like_number,
                     'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
                 },
                 datatype: 'json',
                 success: function (data) {
                     if (data['success']) {
+                        like_number++
                         $("#like").css('color', '#7c071b')
                         $("#like-text").html("Liked")
+                        $("#like-number").html(like_number)
 
 
                     } else {
+                        --like_number
                         $("#like").css('color', '#726f6f')
                         $("#like-text").html("Like")
+                        $("#like-number").html(like_number)
 
 
                     }

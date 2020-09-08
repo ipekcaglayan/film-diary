@@ -24,5 +24,6 @@ urlpatterns = [
     path('likereview/', views.LikeReview.as_view(), name='like review ajax'),
     path('likelist/', views.LikeList.as_view(), name='like list ajax'),
     path('upload_picture/', views.UploadPicture.as_view(), name='upload picture'),
+    path('recommended/<int:id>/', views.RecommendMovie.as_view(), name='recommend'),
 
 ]

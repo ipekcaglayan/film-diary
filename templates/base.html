@@ -64,9 +64,8 @@
                     <li class="nav-item"><a class="nav-link"
                                             href="{% url 'all lists' %}">Lists</a></li>
                 </ul>
-                <form class="form-inline my-2 my-lg-0" action="{% url 'films:movies' %}">
+                <form method="post" class="form-inline my-2 my-lg-0" action="{% url 'search' %}">
                     {% csrf_token %}
-
                     <input class="form-control mr-sm-2" type="search" name="keyword" minlength="3" placeholder="Search"
                            aria-label="Search"
                            autocomplete="off">

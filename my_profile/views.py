@@ -8,6 +8,11 @@ from django.http import JsonResponse
 from django.views import View
 from django.db.models import Count
 from django.contrib.auth.mixins import LoginRequiredMixin
+import pandas as pd
+import numpy as np
+import sklearn
+from sklearn.decomposition import TruncatedSVD
+import MySQLdb
 
 
 # list_names = ListName.objects.all().order_by('-date')
@@ -460,6 +465,8 @@ class DeleteListAjax(LoginRequiredMixin, View):
 
 
 class WatchedAjax(LoginRequiredMixin, View):
+    redirect_field_name = ()
+
     def post(self, request):
         data = {'success': True}
         film_id = request.POST['film_id']
@@ -596,3 +603,50 @@ class UploadPicture(LoginRequiredMixin, View):
     def get(self, request):
         form = forms.ProfilePicture()
         return render(request, "my_profile/upload picture.html", {'form': form})
+
+
+class RecommendMovie(LoginRequiredMixin, View):
+    def get(self, request, id):
+        db = MySQLdb.connect(host='127.0.0.1', user='root', passwd='11223344', db='mydatabase')
+        users = pd.read_sql_query('select id as author_id,username from auth_user', db)
+        reviews = pd.read_sql_query('select author_id, film_id, rating from my_profile_review', db)
+        user_review_merged = pd.merge(users, reviews, on='author_id')
+        movies = pd.read_sql_query('select id as film_id, title from films_film', db)
+        user_reviews_films = pd.merge(user_review_merged, movies, on='film_id')
+        film_genres = pd.read_sql_query('select film_id, genre_id from films_film_genres', db)
+        user_reviews_films_genres = pd.merge(user_reviews_films, film_genres, on='film_id')
+        genres = pd.read_sql_query('select id as genre_id, name from films_genre', db)
+        final = pd.merge(user_reviews_films_genres, genres, on='genre_id')
+        movie = Film.objects.get(id=id)
+        movie_genres = movie.genres.all()
+        if len(movie_genres) == 1:
+            filter1 = final['name'] == movie_genres[0].name
+            final.where(filter1, inplace=True)
+        elif len(movie_genres) == 2:
+            filter1 = final['name'] == movie_genres[0].name
+            filter2 = final['name'] == movie_genres[1].name
+            final.where(filter1 | filter2, inplace=True)
+        else:
+            filter1 = final['name'] == movie_genres[0].name
+            filter2 = final['name'] == movie_genres[1].name
+            filter3 = final['name'] == movie_genres[2].name
+            final.where(filter1 | filter2 | filter3, inplace=True)
+        final = final.dropna()
+        rating_crosstab = final.pivot_table(values='rating', index='author_id', columns='title', fill_value=0)
+        movie_rating = rating_crosstab.T
+        SVD = TruncatedSVD(n_components=6, random_state=17)
+        resultant_matrix = SVD.fit_transform(movie_rating)
+        corr_mat = np.corrcoef(resultant_matrix)
+        movie_names = rating_crosstab.columns
+        movies_list = list(movie_names)
+        corr_movie = corr_mat[movies_list.index(movie.title)]
+        print(corr_movie)
+        print(movies_list)
+        recommended = list(movie_names[(corr_movie > 0.9)])
+        recommended.remove(movie.title)
+        recommended_movies = []
+        for r in recommended:
+            film = Film.objects.get(title=r)
+            if not list(SeenFilm.objects.filter(user=request.user, film=film)):
+                recommended_movies.append(film)
+        return render(request, "my_profile/recommend_movie.html", {'recommended_movies': recommended_movies})

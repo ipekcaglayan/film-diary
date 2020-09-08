@@ -22,8 +22,6 @@ from films import views as films_views
 from my_profile import views as my_profile_views
 from homepage.views import Homepage
 
-app_name = 'film diary'
-
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', Homepage.as_view(), name="home"),
@@ -31,9 +29,10 @@ urlpatterns = [
     path('user_profile/<str:username>/', my_profile_views.OtherProfile.as_view(), name='other_profile'),
     path('accounts/', include('accounts.urls')),
     path('films/', include('films.urls')),
-    path('genres/', films_views.genres, name='genres'),
+    path('genres/', films_views.Genres.as_view(), name='genres'),
     path('genres/<int:id>', films_views.GenreDetail.as_view(), name="genre_detail"),
     path('lists/', films_views.AllLists.as_view(), name="all lists"),
+    path('results/', films_views.Search.as_view(), name="search"),
 
 ]
 urlpatterns += staticfiles_urlpatterns()
