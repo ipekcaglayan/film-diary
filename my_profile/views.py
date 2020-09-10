@@ -638,6 +638,7 @@ class RecommendMovie(LoginRequiredMixin, View):
         final = final.dropna()
         rating_crosstab = final.pivot_table(values='rating', index='author_id', columns='title', fill_value=0)
         movie_rating = rating_crosstab.T
+        print(movie_rating)
         SVD = TruncatedSVD(n_components=6, random_state=17)
         resultant_matrix = SVD.fit_transform(movie_rating)
         corr_mat = np.corrcoef(resultant_matrix)
@@ -646,7 +647,7 @@ class RecommendMovie(LoginRequiredMixin, View):
         corr_movie = corr_mat[movies_list.index(movie.title)]
         print(corr_movie)
         print(movies_list)
-        recommended = list(movie_names[(corr_movie > 0.9)])
+        recommended = list(movie_names[(corr_movie > 0.87)])
         recommended.remove(movie.title)
         recommended_movies = []
         for r in recommended:
@@ -664,13 +665,16 @@ class ContentBasedRecommender(View):
         movie_list['body'] = movie_list['body'].fillna('')
         tfidf_matrix = tfidf.fit_transform(movie_list['body'])
         cosine_sim = linear_kernel(tfidf_matrix, tfidf_matrix)
+        print(cosine_sim)
         indices = pd.Series(movie_list.index, index=movie_list['title']).drop_duplicates()
         print(indices)
         movie = Film.objects.get(id=id)
         similar_to = movie
         movie_index = indices[movie.title]
+        print(cosine_sim[movie_index])
         sim_scores = list(enumerate(cosine_sim[movie_index]))
         sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
+        print(sim_scores)
         sim_scores = sim_scores[1:6]
         movie_indices = [i[0] for i in sim_scores]
         recommended_films = []

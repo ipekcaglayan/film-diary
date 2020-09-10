@@ -3,7 +3,7 @@
 {% load crispy_forms_tags %}
 
 {% block head %}
-    <link rel="stylesheet" href="{% static 'film_detail.css' %}?v1.2">
+    <link rel="stylesheet" href="{% static 'film_detail.css' %}?v1.5">
     <title>{{ detailed_film.title }}</title>
     <link href="https://fonts.googleapis.com/css2?family=Neuton:wght@300&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap" rel="stylesheet">
@@ -130,24 +130,81 @@
 
                         <p>
                             {% if reviewed %}
-                                <a id="add-click" style="display: block; width: 250px" href="javascript:void();"
-                                   onclick="AddReview()" class="btn btn-outline-light"> Add Another
-                                    Review</a>
+                                <button style="background-color: transparent; border: none" id="myBtn-form"
+                                        onclick="AddReview()" class="btn btn-dark"><i class="far fa-edit fa-2x"></i>Add
+                                    Another
+                                    Review
+                                </button>
                             {% else %}
-                                <a id="add-click" style="display: block; width: 250px" href="javascript:void();"
-                                   onclick="AddReview()" class="btn btn-outline-light"> Add Review</a>
+                                <button id="myBtn-form" onclick="AddReview()" class="btn btn-outline-light"><i
+                                        class="far fa-edit fa-2x"></i>Add Review
+                                </button>
                             {% endif %}
 
 
-                        <form id="add-review-form" style="display: none" class="add-review-form"
-                              action="{% url 'profile:add review' id=detailed_film.id %}" method="post"
-                              enctype="multipart/form-data">
-                            {% csrf_token %}
-                            {{ form|crispy }}
-                            <input onclick="FormSubmitted()" type="submit" class="btn btn-outline-primary"
-                                   value="Add Review">
+                            <!-- The Modal -->
+                        <div id="myModal-form" class="modal-form">
 
-                        </form>
+                            <!-- Modal content -->
+                            <div class="modal-content-form">
+                                <span class="close-form">&times;</span>
+                                <h3 style="text-align: center; margin-top: 20px">Add a review...</h3>
+                                <form id="add-review-form" class="add-review-form"
+                                      action="{% url 'profile:add review' id=detailed_film.id %}" method="post"
+                                      enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    <textarea
+                                            style="margin-top:30px;background-color: #99a598; width: 450px; min-height: 200px; margin-left: 75px"
+                                            autocomplete="off" placeholder="Add a review..." id="text-input" type="text"
+                                            name="body"></textarea>
+                                    <input id="rating-val" type="text" style="display: none" name="rating">
+
+                                    <div style="margin-top: 30px" class='rating-stars text-center'>
+                                        <ul id='stars'>
+                                            <li class='star' title='Poor' data-value='1'>
+                                                <i class='fa fa-star fa-fw'></i>
+                                            </li>
+                                            <li class='star' title='Fair' data-value='2'>
+                                                <i class='fa fa-star fa-fw'></i>
+                                            </li>
+                                            <li class='star' title='Good' data-value='3'>
+                                                <i class='fa fa-star fa-fw'></i>
+                                            </li>
+                                            <li class='star' title='Excellent' data-value='4'>
+                                                <i class='fa fa-star fa-fw'></i>
+                                            </li>
+                                            <li class='star' title='WOW!!!' data-value='5'>
+                                                <i class='fa fa-star fa-fw'></i>
+                                            </li>
+                                            <li class='star' title='WOW!!!' data-value='6'>
+                                                <i class='fa fa-star fa-fw'></i>
+                                            </li>
+                                            <li class='star' title='WOW!!!' data-value='7'>
+                                                <i class='fa fa-star fa-fw'></i>
+                                            </li>
+                                            <li class='star' title='WOW!!!' data-value='8'>
+                                                <i class='fa fa-star fa-fw'></i>
+                                            </li>
+                                            <li class='star' title='WOW!!!' data-value='9'>
+                                                <i class='fa fa-star fa-fw'></i>
+                                            </li>
+                                            <li class='star' title='WOW!!!' data-value='10'>
+                                                <i class='fa fa-star fa-fw'></i>
+                                            </li>
+
+
+                                        </ul>
+                                    </div>
+                                    <input style="margin-left: 220px" onclick="FormSubmitted()" type="submit"
+                                           class="btn btn-outline-light"
+                                           value="Add Review">
+
+                                </form>
+                            </div>
+
+                        </div>
+
+
 
 
 
@@ -210,8 +267,9 @@
 
                     {% endif %}
                 </div>
-                {% if rating_num >= 6 %}
-                    <a href="{% url 'profile:recommend' id=detailed_film.id %}"> Recommended Movies</a>
+                {% if author_num > 6 %}
+                    <a style="margin-top: 10px; width: 250px" class="btn btn-outline-light"
+                       href="{% url 'profile:recommend' id=detailed_film.id %}"> Recommended Movies</a>
                 {% endif %}
             </div>
         </div>
@@ -516,6 +574,87 @@
 
                 }
             });
+        }
+    </script>
+    <script>
+        $(document).ready(function () {
+
+            /* 1. Visualizing things on Hover - See next part for action on click */
+            $('#stars li').on('mouseover', function () {
+                var onStar = parseInt($(this).data('value'), 10); // The star currently mouse on
+
+                // Now highlight all the stars that's not after the current hovered star
+                $(this).parent().children('li.star').each(function (e) {
+                    if (e < onStar) {
+                        $(this).addClass('hover');
+                    } else {
+                        $(this).removeClass('hover');
+                    }
+                });
+
+            }).on('mouseout', function () {
+                $(this).parent().children('li.star').each(function (e) {
+                    $(this).removeClass('hover');
+                });
+            });
+
+
+            /* 2. Action to perform on click */
+            $('#stars li').on('click', function () {
+
+                var onStar = parseInt($(this).data('value'), 10); // The star currently selected
+                var stars = $(this).parent().children('li.star');
+
+                for (i = 0; i < stars.length; i++) {
+                    $(stars[i]).removeClass('selected');
+                }
+
+                for (i = 0; i < onStar; i++) {
+                    $(stars[i]).addClass('selected');
+                }
+
+                // JUST RESPONSE (Not needed)
+                var ratingValue = parseInt($('#stars li.selected').last().data('value'), 10);
+                var msg = "";
+                document.getElementById("rating-val").value = ratingValue;
+
+                if (ratingValue > 1) {
+                    msg = "Thanks! You rated this " + ratingValue + " stars.";
+                } else {
+                    msg = "We will improve ourselves. You rated this " + ratingValue + " stars.";
+                }
+                responseMessage(msg);
+
+            });
+
+
+        });
+    </script>
+    <script>
+        // Get the modal
+        var modal = document.getElementById("myModal-form");
+
+        // Get the button that opens the modal
+        var btn = document.getElementById("myBtn-form");
+
+        // Get the <span> element that closes the modal
+        var span = document.getElementsByClassName("close-form")[0];
+
+        // When the user clicks on the button, open the modal
+        btn.onclick = function () {
+            modal.style.display = "block";
+        }
+
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function () {
+            modal.style.display = "none";
+        }
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
         }
     </script>
 

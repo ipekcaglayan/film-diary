@@ -52,6 +52,9 @@ class FilmDetail(View):
                     'rating_num']
 
         film_reviews = Review.objects.filter(film__title=detailed_film.title)
+        author_num = Review.objects.filter(film=detailed_film).values('author_id').annotate(
+            review_num=Count('author_id'))
+        author_num = len(author_num)
         reviews_with_likes = []
         if request.user.is_authenticated:
             form = forms.AddReview()
@@ -73,7 +76,7 @@ class FilmDetail(View):
                            'added': added, 'reviewed': reviewed, 'review': review,
                            'liked': liked, 'added_watchlist': added_watchlist, 'form': form,
                            'reviews_with_likes': reviews_with_likes, 'like_number': like_number,
-                           'avg_rating': str(avg_rating)[:4], 'rating_num': rating_num})
+                           'avg_rating': str(avg_rating)[:3], 'rating_num': rating_num, 'author_num': author_num})
 
         else:
             return render(request, 'films/film_detail.html',

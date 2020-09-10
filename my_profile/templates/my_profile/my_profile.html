@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=Merriweather+Sans&family=Mukta:wght@300&family=Ubuntu:wght@700&display=swap"
           rel="stylesheet">
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap" rel="stylesheet">
 {% endblock %}
 
 {% block body %}
@@ -106,7 +107,7 @@
 
     <div class="container" style="margin-top: 150px; margin-bottom: 200px">
         <div id="watched" class="city">
-            <h3 style="text-align: left"> Watched Films</h3>
+            <h3 style="text-align: left ;font-size: 36px;font-family: 'Permanent Marker', cursive; margin-left: 390px"> Watched Films</h3>
             <hr>
             <div class="row">
                 {% for seen in seen_films %}
@@ -121,7 +122,7 @@
             </div>
         </div>
         <div id="reviews" class="city" style="display:none">
-            <h1 style="font-family: 'Permanent Marker', cursive; text-align: center; margin-bottom: 50px">
+            <h1 style="font-family: 'Permanent Marker', cursive; text-align: center; margin-bottom: 50px; font-size: 36px">
                 Reviews</h1>
             {% for review in reviews %}
                 <div id="review-card-{{ review.id }}" class="card-body mb-5" style="background-color: #2f2d2d;">
@@ -167,7 +168,8 @@
 
         </div>
         <div id="watchlist" class="city" style="display:none">
-            <h2 style="text-align: center">Watchlist</h2> <br> <br>
+            <h2 style="text-align: center;font-size: 36px;font-family: 'Permanent Marker', cursive">Watchlist</h2> <br>
+            <br>
             <div class="row">
 
                 {% for movie in movies %}
@@ -227,11 +229,12 @@
 
             <!-- Trigger/Open The Modal -->
             <button style="background-color: transparent; border-color: transparent; display: inline" id="myBtn"><i
-                    class="fas fa-plus fa-2x" style="display: inline"></i> <h6
-                    style="display: inline; font-size: 25px; margin-right: 350px">
+                    class="fas fa-plus fa-2x" style="display: inline; color: #FFFFFF66"></i> <h6
+                    style="display: inline; font-size: 25px; margin-right: 350px; color: #FFFFFF66">
                 Create List</h6>
             </button>
-            <h2 id="lists-text" style=" display:inline;"> Lists</h2>
+            <h2 id="lists-text" style=" display:inline;font-size: 36px;font-family: 'Permanent Marker', cursive;
+"> Lists</h2>
 
             <!-- The Modal -->
             <div id="myModal" class="modal" style="padding-top: 450px;padding-left: 480px">
@@ -307,6 +310,8 @@
 
         </div>
         <div id="likes" class="city" style="display:none">
+            <h2 style=";font-size: 36px;font-family: 'Permanent Marker', cursive; margin-left: 490px"> Likes</h2>
+            <hr style="color: #717677; border: 1px solid; margin-bottom: 80px">
             <div class="row">
                 <div class="col-md-4" style="display: inline">
                     <p style="text-align: center">Films</p>
@@ -406,7 +411,8 @@
                                     </i>
                                     <img
                                             src="{{ list_name.user.profile.picture.url }}"
-                                            style="height: 30px;width: 30px; object-fit: cover;border-radius: 100%; margin-left: 5px" alt="">
+                                            style="height: 30px;width: 30px; object-fit: cover;border-radius: 100%; margin-left: 5px"
+                                            alt="">
                                 </p>
 
 
