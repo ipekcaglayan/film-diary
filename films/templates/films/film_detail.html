@@ -45,11 +45,11 @@
 
                                         {% if added %}
                                         id="watched-eye"
-                                        href="#"
+                                        href="javascript:void();"
                                         style=" color: #0c8212"
                                         onclick="Watched({{ detailed_film.id }});"
                                         {% else %}
-                                        href="#"
+                                        href="javascript:void();"
                                         id="watched-eye"
                                         style=" color: #726f6f "
                                         onclick="Watched({{ detailed_film.id }});"
@@ -64,7 +64,7 @@
 
                         </div>
                         <div class="like-btn" style="display: inline">
-                            <a href="#" id="like"
+                            <a href="javascript:void();" id="like"
                                     {% if liked %}
                                style="margin-right: 5px; color: #7c071b"
                                     {% else %}
@@ -82,7 +82,7 @@
                         </div>
                         <div class="watchlist-btn" style="display: inline">
 
-                            <a href="#" id="watchlist"
+                            <a href="javascript:void();" id="watchlist"
                                     {% if added_watchlist %}
                                style="color: #5fdde5"
                                     {% else %}
@@ -130,12 +130,12 @@
 
                         <p>
                             {% if reviewed %}
-                                <a id="add-click" style="display: block" href="javascript:void();"
-                                   onclick="AddReview()"> Add Another
+                                <a id="add-click" style="display: block; width: 250px" href="javascript:void();"
+                                   onclick="AddReview()" class="btn btn-outline-light"> Add Another
                                     Review</a>
                             {% else %}
-                                <a id="add-click" style="display: block" href="javascript:void();"
-                                   onclick="AddReview()"> Add Review</a>
+                                <a id="add-click" style="display: block; width: 250px" href="javascript:void();"
+                                   onclick="AddReview()" class="btn btn-outline-light"> Add Review</a>
                             {% endif %}
 
 
@@ -144,7 +144,7 @@
                               enctype="multipart/form-data">
                             {% csrf_token %}
                             {{ form|crispy }}
-                            <input onclick="FormSubmitted()" type="submit" class="btn-outline-primary"
+                            <input onclick="FormSubmitted()" type="submit" class="btn btn-outline-primary"
                                    value="Add Review">
 
                         </form>
@@ -152,7 +152,8 @@
 
 
                         </p>
-                        <a href="{% url 'profile:content_based_recommender' id=detailed_film.id%}" class="btn btn-outline-warning"> You might like</a>
+                        <a href="{% url 'profile:content_based_recommender' id=detailed_film.id %}"
+                           class="btn btn-outline-light" style="width: 250px"> You might like</a>
 
 
 

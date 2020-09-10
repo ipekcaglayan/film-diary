@@ -254,13 +254,14 @@ class ListDetail(View):
         list_name = ListName.objects.get(id=id)
         list_films = FilmList.objects.filter(list=list_name)
         if request.user.is_authenticated:
+            movies = Film.objects.all()
             logged_user = request.user.username
             liked = ListLike.objects.filter(list=list_name, user=request.user)
             if list(FilmList.objects.filter(list=list_name)):
                 last_added = FilmList.objects.filter(list=list_name).order_by('-date')[0]
                 return render(request, 'films/list_detail.html',
                               {'list_films': list_films, 'list_name': list_name, 'last_update': last_added.date,
-                               'form': form, 'liked': liked, 'logged_user': logged_user})
+                               'form': form, 'liked': liked, 'logged_user': logged_user, 'movies': movies})
             return render(request, 'films/list_detail.html',
                           {'list_films': list_films, 'list_name': list_name, 'form': form,
                            'liked': liked, 'logged_user': logged_user})
@@ -313,9 +314,10 @@ class CreateList(LoginRequiredMixin, View):
 
 class FilmToList(LoginRequiredMixin, View):
     def get(self, request, id):
+        movies = Film.objects.all()
         list_name = ListName.objects.get(id=id)
         form = forms.FilmToList()
-        return render(request, "films/film_to_list.html", {'form': form, 'list_name': list_name})
+        return render(request, "films/film_to_list.html", {'form': form, 'list_name': list_name, 'movies': movies})
 
     def post(self, request, id):
         list_name = ListName.objects.get(id=id)
@@ -428,7 +430,7 @@ class RemoveListAjax(LoginRequiredMixin, View):
             film_id = request.POST['film_id']
             list_name = request.POST['list_name']
             film = Film.objects.get(id=film_id)
-            film_list = ListName.objects.get(list_name=list_name)
+            film_list = ListName.objects.get(id=list_name)
             FilmList.objects.get(film=film, list=film_list).delete()
             data['success'] = True
 
@@ -677,4 +679,4 @@ class ContentBasedRecommender(View):
         for film in films:
             recommended_films.append(Film.objects.get(title=film))
         return render(request, "my_profile/content_based_recommender.html",
-                      {'recommended_films': recommended_films, 'similar_to': similar_to, 'film_likes':film_likes})
+                      {'recommended_films': recommended_films, 'similar_to': similar_to, 'film_likes': film_likes})

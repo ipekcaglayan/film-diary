@@ -6,7 +6,7 @@ from django.views import View
 from django.views.generic import ListView
 from my_profile import forms
 from django.db.models import Count, Avg
-from django.core.paginator import Paginator
+from django.http import JsonResponse
 
 
 class Movies(ListView):

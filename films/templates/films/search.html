@@ -100,18 +100,21 @@
         <h2 style="font-family: 'Permanent Marker', cursive; font-size: 32px; margin-bottom: 30px">Lists</h2>
         <div class="row">
             {% for name,list in list_films %}
-                <div class="col-md-4">
-                    <div class="card mb-3 mr-7" style="max-width: 210px; background-color: #1d2124">
-                        <div class="row no-gutters">
-                            {% for film_list in list %}
-                                <div class="col-md-4">
-                                    <img src="{{ film_list.film.poster.url }}" class="card-img" alt="...">
-                                </div>
-                            {% endfor %}
+                <div class="col-md-4" style="margin-bottom: 50px">
+                    <a href="{% url 'profile:list detail' id=name.id %}">
+                        <div class="card mb-3 mr-7" style="max-width: 210px; background-color: #1d2124">
+                            <div class="row no-gutters">
+                                {% for film_list in list %}
+                                    <div class="col-md-4">
+                                        <img src="{{ film_list.film.poster.url }}" class="card-img" alt="...">
+                                    </div>
+                                {% endfor %}
+
+                            </div>
 
                         </div>
+                    </a>
 
-                    </div>
                     <a href="{% url 'profile:list detail' id=name.id %}">{{ name.list_name }}</a>
 
                 </div>

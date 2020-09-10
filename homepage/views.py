@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from films.models import Film, ListName, FilmList, FilmLike
+from films.models import Film, ListName, FilmList, FilmLike, ListLike
 from my_profile.models import Review, SeenFilm, ReviewLike
 from django.db.models import Count
 from django.views import View
@@ -16,7 +16,10 @@ class Homepage(View):
         for ele in dictionary:
             film = Film.objects.get(id=ele['film_id'])
             popular_films.append(film)
-        list_names = ListName.objects.all().order_by('-date')[:3]
+        liked_lists = ListLike.objects.values("list_id").annotate(count=Count('user')).order_by("-count")[:3]
+        list_names = []
+        for liked_list in liked_lists:
+            list_names.append(ListName.objects.get(id=liked_list['list_id']))
         list_films = []
         for name in list_names:
             list_films.append(list(FilmList.objects.filter(list=name)[:3]))
