@@ -641,13 +641,13 @@ class RecommendMovie(LoginRequiredMixin, View):
         print(movie_rating)
         SVD = TruncatedSVD(n_components=6, random_state=17)
         resultant_matrix = SVD.fit_transform(movie_rating)
+        print(resultant_matrix)
         corr_mat = np.corrcoef(resultant_matrix)
         movie_names = rating_crosstab.columns
         movies_list = list(movie_names)
         corr_movie = corr_mat[movies_list.index(movie.title)]
         print(corr_movie)
-        print(movies_list)
-        recommended = list(movie_names[(corr_movie > 0.87)])
+        recommended = list(movie_names[(corr_movie > 0.6)])
         recommended.remove(movie.title)
         recommended_movies = []
         for r in recommended:
@@ -684,3 +684,8 @@ class ContentBasedRecommender(View):
             recommended_films.append(Film.objects.get(title=film))
         return render(request, "my_profile/content_based_recommender.html",
                       {'recommended_films': recommended_films, 'similar_to': similar_to, 'film_likes': film_likes})
+
+
+class Deneme(View):
+    def get(self, request):
+        return render(request, 'my_profile/deneme.html')
